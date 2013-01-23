@@ -6,6 +6,7 @@
 <!-- ** CSS ** -->
 <!-- base library -->
 <link rel="stylesheet" type="text/css" href="../resources/extJS/css/ext-all.css" />
+<link rel="stylesheet" type="text/css" href="../resources/extJS/css/style.css" />
 
 <!-- Open Layers Lybrary -->
 <script src="http://openlayers.org/api/OpenLayers.js"></script>
@@ -20,7 +21,9 @@
 
 
 <!-- extensions -->
-<script type="text/javascript" src="components/FormGeoruting.js"></script>
+<script type="text/javascript" src="components/georouting/FormGeorouting.js"></script>
+<script type="text/javascript" src="components/georouting/ListViewGeorouting.js"></script>
+
 
 <!-- page specific -->
 <script type="text/javascript">
@@ -29,9 +32,11 @@
 // 		var bd = Ext.getBody();
 // 		bd.createChild({tag: 'h2', html: 'Form 1 - Very Simple'});
 
-		var form = new GEO.SorForm();
+		var form = new GEO.GeoroutingForm();
 		form.render(document.body);
-
+		
+		var listGeo = new GEO.ListGeoroutingForm();
+		listGeo.render(document.body);
 	});
 
 </script>
