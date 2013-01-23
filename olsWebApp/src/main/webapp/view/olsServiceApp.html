@@ -34,6 +34,7 @@
 
 		var form = new GEO.GeoroutingForm();
 		form.render(document.body);
+		form.setHost('localhost');
 		
 		var listGeo = new GEO.ListGeoroutingForm();
 		listGeo.render(document.body);
@@ -43,7 +44,7 @@
 
 </head>
 <body>
-	<fieldset> 
+	<fieldset style="width:100%; height:70%"> 
 		<div style="width:100%; height:70%" id="map"></div>
 	</fieldset>
       <script defer="defer" type="text/javascript">

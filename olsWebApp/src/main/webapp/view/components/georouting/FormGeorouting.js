@@ -1,8 +1,12 @@
 Ext.ns('GEO');
+var host = document.location.host;
+
 GEO.GeoroutingForm = Ext.extend(Ext.form.FormPanel, {
+	
     initComponent:function() {
-    	var config = {
-		        labelWidth: 75, // label settings here cascade unless overridden
+    	var config = 
+    	{
+		        labelWidth: 75, // label settings here cascade unless 	
 		        frame:true,
 		        title: 'Form Inputs Georouting',
 		        bodyStyle:'padding:5px 5px 0',
@@ -47,9 +51,7 @@ GEO.GeoroutingForm = Ext.extend(Ext.form.FormPanel, {
 			            		var cValue = Ext.getCmp('comune').getValue();
 			            		var tValue = Ext.getCmp('via').getValue();
 			            		
-			            		alert(pValue);
-			            		alert(cValue);
-			            		alert(tValue);
+			            		createXMLRequest(pValue, cValue, tValue);
 		            		}else{
 		            			return;
 		            		}
@@ -67,16 +69,27 @@ GEO.GeoroutingForm = Ext.extend(Ext.form.FormPanel, {
 			            	Ext.getCmp('via').setValue(null);
 			            }	
 		            },
-		        ]
+		        ],
 		        
     	};
     	
     	// apply config
     	Ext.apply(this, Ext.apply(this.initialConfig, config));
+        //Start init Component
     	GEO.GeoroutingForm.superclass.initComponent.call(this);
-  }
+    }
+
+	,setHost:function(hostName){
+		host = hostName;
+	}
+	
+	,getHostName:function(){
+		return host;
+	}
+
 });
 Ext.reg('georoutingform', GEO.GeoroutingForm);
+
 
 
 function validationText(v){
@@ -84,4 +97,58 @@ function validationText(v){
         return "Value is incorrect";
     }
     return true;
+}
+
+function createXMLRequest(pValue, cValue, tValue){
+	var xmlhttp = null;
+	if (window.XMLHttpRequest){
+		// code for IE7+, Firefox, Chrome, Opera, Safari
+		xmlhttp = new XMLHttpRequest();
+	}else{
+		// code for IE6, IE5
+		xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+	}
+	
+	
+	var url = "http://"+host+"/geoserver/ols";
+	alert(url);
+	var xml = "<?xml version='1.0' encoding='UTF-8'?>"
+				+"<GeocodeRequest xmlns='http://www.opengis.net/xls'>"
+				+"	<Address countryCode='IT'>"
+				+"		<StreetAddress>"
+				+"			<Street>" + tValue + "</Street>"
+				+"		</StreetAddress>"
+				+"		<Place type='Municipality'>" + cValue + "</Place>"
+				+"		<Place type='CountrySecondarySubdivision'>" + pValue + "</Place>"
+				+"		<PostalCode></PostalCode>"
+				+"	</Address>"
+				+"</GeocodeRequest>";
+	
+	//Handler POST request
+	xmlhttp.open("POST", url);
+	
+	xmlhttp.onreadystatechange = function() {
+		if (xmlhttp.readyState==4)
+		{
+		    switch (xmlhttp.status)
+		    {
+		    case 200: // Do the Do
+		    	alert(xmlhttp.responseXML);
+		        break;
+		    case 404: // Error: 404 - Resource not found!
+		    	alert("Error 404");
+		        break;
+		    case 500:
+		    	alert("Error 500 " + xmlhttp.responseText);
+		    	break;
+		    default:  // Error: Unknown!
+		    }
+		}    
+    };
+    
+    xmlhttp.send(xml);
+    
+    
+
+	
 }
