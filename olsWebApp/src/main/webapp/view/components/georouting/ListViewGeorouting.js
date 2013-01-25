@@ -21,6 +21,22 @@ GEO.ListGeoroutingForm = Ext.extend(Ext.form.FormPanel, {
 		        	    handler: function(data){
 		        	    	alert(data);
 		        	    	alert(data[0].lastName);
+		        	    	
+		        	    	var prova = new Ext.data.JsonStore({
+		        	    	    data: [
+		        	    				{ "firstName":"John" , "lastName":"Doe", "surname":"1" }, 
+		        	    				{ "firstName":"Peter" , "lastName": "Jones", "surname":"4" }
+		        	    			],
+//		        	    	    root: 'images',
+		        	    	    fields: [
+		        	    	        'firstName', 'lastName'
+		        	    	    ]
+		        	    	});
+		        	    	alert(prova);
+//		        	    	prova.load();
+		        	    	this.setStore(prova);
+//		        	    	this.store = pippo;
+		        	    	
 		        	    },
 		        	    reserveScrollOffset: true,
 		        	    columns: [{
@@ -53,9 +69,10 @@ Ext.reg('listgeoroutingform', GEO.ListGeoroutingForm);
 
 var pippo = new Ext.data.JsonStore({
     data: [
-			{ "firstName":"John" , "lastName":"Doe" }, 
-			{ "firstName":"Anna" , "lastName":"Smith" }, 
-			{ "firstName":"Peter" , "lastName": "Jones" }
+			{ "firstName":"John" , "lastName":"Doe", "surname":"1" }, 
+			{ "firstName":"Anna" , "lastName":"Smith", "surname":"2" }, 
+			{ "firstName":"Alessio" , "lastName": "Casini", "surname":"3" },
+			{ "firstName":"Peter" , "lastName": "Jones", "surname":"4" }
 		],
 //    root: 'images',
     fields: [
@@ -63,4 +80,8 @@ var pippo = new Ext.data.JsonStore({
     ]
 });
 pippo.load();
+
+function updateStore(){
+	
+}
 
