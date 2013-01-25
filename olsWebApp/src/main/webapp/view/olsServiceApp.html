@@ -35,6 +35,8 @@
         var wms = new OpenLayers.Layer.WMS( "OpenLayers WMS",
             "http://labs.metacarta.com/wms/vmap0", {layers: 'basic'} );
         map.addLayer(wms);
+        markers = new OpenLayers.Layer.Markers("StreetMarker");   			
+        map.addLayer(markers);
         map.zoomToMaxExtent();
         
         Ext.onReady(function() {
@@ -52,7 +54,15 @@
     			var position = event.pos;
     			var lon = position.split(" ")[0];
     			var lat = position.split(" ")[1];
-    			map.setCenter(new OpenLayers.LonLat(lon,lat),13);
+				//Add Marker Place
+				markers.clearMarkers();
+				var location = new OpenLayers.LonLat(lon,lat);
+				var size = new OpenLayers.Size(21,25);
+			    var offset = new OpenLayers.Pixel(-(size.w/2), -size.h);
+			    var icon = new OpenLayers.Icon('http://www.openlayers.org/dev/img/marker.png',size,offset);
+			    markers.addMarker(new OpenLayers.Marker(location,icon.clone())); 
+			    
+    			map.setCenter(location,13);
     		}
     	});
       </script>
