@@ -1,6 +1,6 @@
 Ext.ns('GEO');
 GEO.ListGeoroutingForm = Ext.extend(Ext.form.FormPanel, {
-    initComponent:function() {
+	initComponent:function() {
     	var config = {
 		        labelWidth: 75, // label settings here cascade unless overridden
 		        frame:true,
@@ -14,33 +14,53 @@ GEO.ListGeoroutingForm = Ext.extend(Ext.form.FormPanel, {
 		
 		        items: [
 		          {
-//		        	  store: store,
+		        	  	store: pippo,
+		        	    id:"streesList",
 		        	    multiSelect: true,
 		        	    emptyText: 'No images to display',
+		        	    handler: function(data){
+		        	    	alert(data);
+		        	    	alert(data[0].lastName);
+		        	    },
 		        	    reserveScrollOffset: true,
 		        	    columns: [{
-		        	        header: 'Toponimo',
+		        	        header: 'First Name',
 		        	        width: .5,
-		        	        dataIndex: 'toponimo'
+		        	        height: 10,
+		        	        dataIndex: 'firstName'
 		        	    },{
-		        	        header: 'Numero Civico',
+		        	        header: 'Lasr Name',
 		        	        width: .35,
-		        	        dataIndex: 'numciv'
-//		        	        tpl: '{lastmod:date("m-d h:i a")}'
-		        	    },{
-		        	        header: 'Note',
-		        	        dataIndex: 'note',
-//		        	        tpl: '{size:fileSize}', // format using Ext.util.Format.fileSize()
-		        	        align: 'right'
+		        	        height: 10,
+		        	        dataIndex: 'lastName'
 		        	    }]
-		          }
+		          },
 		        ]
     	};
     	
+    	//Add Listener
+    	this.addListener("prova", this.prova);
     	// apply config
     	Ext.apply(this, Ext.apply(this.initialConfig, config));
     	GEO.ListGeoroutingForm.superclass.initComponent.call(this);
   }
+
+	,prova:function(){
+		alert("Chiamato Evento Prova");
+	}
 });
 Ext.reg('listgeoroutingform', GEO.ListGeoroutingForm);
+
+var pippo = new Ext.data.JsonStore({
+    data: [
+			{ "firstName":"John" , "lastName":"Doe" }, 
+			{ "firstName":"Anna" , "lastName":"Smith" }, 
+			{ "firstName":"Peter" , "lastName": "Jones" }
+		],
+//    root: 'images',
+    fields: [
+        'firstName', 'lastName'
+    ]
+});
+pippo.load();
 
