@@ -13,20 +13,14 @@ GEO.ListGeoroutingForm = Ext.extend(Ext.form.FormPanel, {
 		        defaultType: 'listview',
 		
 		        items: [
-		          {
+		        {
 		        	  	store: storeStreets,
 		        	    id:"streesList",
-		        	    itemId: "aadadadad",
 		        	    singleSelect : true,
-		        	    emptyText: 'No images to display',
+		        	    emptyText: 'No Streets to display',
 		        	    width: '100%',
-// height: '100%',
-// width:425,
 		                height:250,
-		                collapsible:true,
-// viewConfig: {
-// emptyText: 'No Streets to display'
-// },
+//		                collapsible:true,
 		        	    handler: function(storeData){
 		        	    	var storeStreets = new Ext.data.JsonStore({
 		        	    	    data: storeData,
@@ -42,31 +36,31 @@ GEO.ListGeoroutingForm = Ext.extend(Ext.form.FormPanel, {
 		        	    reserveScrollOffset: true,
 		        	    columns: [{
 		        	        header: 'Street Name',
-		        	        width: '40%',
+		        	        resizable: false,
+		        	        width: .3,
 		        	        height: '100%',
-		        	        flex: 50,
 		        	        dataIndex: 'street'
 		        	    },{
 		        	        header: 'Place',
-		        	        width: '20%',
+		        	        resizable: false,
+		        	        width: .2,
 		        	        height: '100%',
-		        	        flex: 50,
 		        	        dataIndex: 'place'
 		        	    },{
 		        	        header: 'Postal Code',
-		        	        width: '20%',
+		        	        resizable: false,
+		        	        width: .1,
 		        	        height: '100%',
-		        	        flex: 50,
 		        	        dataIndex: 'postalcode'
 		        	    },{
 		        	        header: 'Country Code',
-		        	        width: '20%',
+		        	        resizable: false,
+		        	        width: .1,
 		        	        height: '100%',
-		        	        flex: 50,
 		        	        dataIndex: 'countrycode'
-		        	    }
-		        	    ],
-		        	    listeners:{
+		        	    }]
+		        	    
+		        	    ,listeners:{
 		        	    	render: function(e, record){
 		        	    		this.on('click', function(){
 		        	    			element = this.getSelectedRecords();
@@ -76,8 +70,8 @@ GEO.ListGeoroutingForm = Ext.extend(Ext.form.FormPanel, {
 		        	    			evt.initEvent("georoutingEvent",true,true);
 		        	    			evt.pos = position;
 		        	    			document.dispatchEvent(evt);
-		        	    		})
-		        	    		}
+		        	    		});
+		        	    	}
 		        	    }
 		          }
 		        ]
