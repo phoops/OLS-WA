@@ -179,6 +179,10 @@ function toJSON(xml){
 	nodeAddress = xml.getElementsByTagNameNS(namespace, "GeocodedAddress");
 	for(var i=0; i<nodeAddress.length; i++){
 		var position = xml.getElementsByTagNameNS(namespace2, "pos").item(i).firstChild.nodeValue;
+		if(xml.getElementsByTagNameNS(namespace, "Street").item(i) == null){
+			Ext.MessageBox.alert('Error', 'Street not found!');
+			return;
+		}
 		var streetName = xml.getElementsByTagNameNS(namespace, "Street").item(i).firstChild.nodeValue;
 		var placeName = xml.getElementsByTagNameNS(namespace, "Place").item(i).firstChild.nodeValue;
 		var postalCodeValue = xml.getElementsByTagNameNS(namespace, "PostalCode").item(i).firstChild.nodeValue;
