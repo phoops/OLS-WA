@@ -24,25 +24,8 @@
 <script type="text/javascript" src="components/georouting/FormGeorouting.js"></script>
 <script type="text/javascript" src="components/georouting/ListViewGeorouting.js"></script>
 
-
-<!-- page specific -->
-<script type="text/javascript">
-	Ext.onReady(function() {
-		Ext.QuickTips.init();
-// 		var bd = Ext.getBody();
-// 		bd.createChild({tag: 'h2', html: 'Form 1 - Very Simple'});
-
-		var form = new GEO.GeoroutingForm();
-		form.render(document.body);
-		form.setHost('localhost');
-		
-		var listGeo = new GEO.ListGeoroutingForm();
-		listGeo.render(document.body);
-	});
-
-</script>
-
 </head>
+<!-- page specific http://vmap0.tiles.osgeo.org/wms/vmap0-->
 <body>
 	<fieldset style="width:100%; height:70%"> 
 		<div style="width:100%; height:70%" id="map"></div>
@@ -50,11 +33,29 @@
       <script defer="defer" type="text/javascript">
         var map = new OpenLayers.Map('map');
         var wms = new OpenLayers.Layer.WMS( "OpenLayers WMS",
-            "http://vmap0.tiles.osgeo.org/wms/vmap0", {layers: 'basic'} );
+            "http://labs.metacarta.com/wms/vmap0", {layers: 'basic'} );
         map.addLayer(wms);
         map.zoomToMaxExtent();
+        
+        Ext.onReady(function() {
+    		Ext.QuickTips.init();
+
+    		var form = new GEO.GeoroutingForm();
+    		form.render(document.body);
+    		form.setHost('localhost');
+    		
+    		var listGeo = new GEO.ListGeoroutingForm();
+    		listGeo.render(document.body);
+    		
+    		document.addEventListener("georoutingEvent",handlerZoom,false);
+    		function handlerZoom(event){
+    			var position = event.pos;
+    			var lon = position.split(" ")[0];
+    			var lat = position.split(" ")[1];
+    			map.setCenter(new OpenLayers.LonLat(lon,lat),13);
+    		}
+    	});
       </script>
-      
 </body>
 </html>
 

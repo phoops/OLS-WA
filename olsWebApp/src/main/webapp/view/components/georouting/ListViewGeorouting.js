@@ -14,74 +14,98 @@ GEO.ListGeoroutingForm = Ext.extend(Ext.form.FormPanel, {
 		
 		        items: [
 		          {
-		        	  	store: pippo,
+		        	  	store: storeStreets,
 		        	    id:"streesList",
-		        	    multiSelect: true,
+		        	    itemId: "aadadadad",
+		        	    singleSelect : true,
 		        	    emptyText: 'No images to display',
-		        	    handler: function(data){
-		        	    	alert(data);
-		        	    	alert(data[0].lastName);
-		        	    	
-		        	    	var prova = new Ext.data.JsonStore({
-		        	    	    data: [
-		        	    				{ "firstName":"John" , "lastName":"Doe", "surname":"1" }, 
-		        	    				{ "firstName":"Peter" , "lastName": "Jones", "surname":"4" }
-		        	    			],
-//		        	    	    root: 'images',
+		        	    width: '100%',
+// height: '100%',
+// width:425,
+		                height:250,
+		                collapsible:true,
+// viewConfig: {
+// emptyText: 'No Streets to display'
+// },
+		        	    handler: function(storeData){
+		        	    	var storeStreets = new Ext.data.JsonStore({
+		        	    	    data: storeData,
 		        	    	    fields: [
-		        	    	        'firstName', 'lastName'
+		        	    	             'street', 'place', 'postalcode', 'countrycode', 'pos'
 		        	    	    ]
 		        	    	});
-		        	    	alert(prova);
-//		        	    	prova.load();
-		        	    	this.setStore(prova);
-//		        	    	this.store = pippo;
+// storeStreets.load();
+// this.getStore().loadRecords(storeStreets);
+		        	    	this.setStore(storeStreets);
 		        	    	
 		        	    },
 		        	    reserveScrollOffset: true,
 		        	    columns: [{
-		        	        header: 'First Name',
-		        	        width: .5,
-		        	        height: 10,
-		        	        dataIndex: 'firstName'
+		        	        header: 'Street Name',
+		        	        width: '40%',
+		        	        height: '100%',
+		        	        flex: 50,
+		        	        dataIndex: 'street'
 		        	    },{
-		        	        header: 'Lasr Name',
-		        	        width: .35,
-		        	        height: 10,
-		        	        dataIndex: 'lastName'
-		        	    }]
-		          },
+		        	        header: 'Place',
+		        	        width: '20%',
+		        	        height: '100%',
+		        	        flex: 50,
+		        	        dataIndex: 'place'
+		        	    },{
+		        	        header: 'Postal Code',
+		        	        width: '20%',
+		        	        height: '100%',
+		        	        flex: 50,
+		        	        dataIndex: 'postalcode'
+		        	    },{
+		        	        header: 'Country Code',
+		        	        width: '20%',
+		        	        height: '100%',
+		        	        flex: 50,
+		        	        dataIndex: 'countrycode'
+		        	    }
+		        	    ],
+		        	    listeners:{
+		        	    	render: function(e, record){
+		        	    		this.on('click', function(){
+		        	    			element = this.getSelectedRecords();
+		        	    			position = element[0].json.pos;
+		        	    			// Create the event for zoom
+		        	    			var evt = document.createEvent("Event");
+		        	    			evt.initEvent("georoutingEvent",true,true);
+		        	    			evt.pos = position;
+		        	    			document.dispatchEvent(evt);
+		        	    		})
+		        	    		}
+		        	    }
+		          }
 		        ]
     	};
     	
-    	//Add Listener
+    	// Add Listener
     	this.addListener("prova", this.prova);
     	// apply config
     	Ext.apply(this, Ext.apply(this.initialConfig, config));
     	GEO.ListGeoroutingForm.superclass.initComponent.call(this);
-  }
-
-	,prova:function(){
-		alert("Chiamato Evento Prova");
 	}
 });
 Ext.reg('listgeoroutingform', GEO.ListGeoroutingForm);
 
-var pippo = new Ext.data.JsonStore({
-    data: [
-			{ "firstName":"John" , "lastName":"Doe", "surname":"1" }, 
-			{ "firstName":"Anna" , "lastName":"Smith", "surname":"2" }, 
-			{ "firstName":"Alessio" , "lastName": "Casini", "surname":"3" },
-			{ "firstName":"Peter" , "lastName": "Jones", "surname":"4" }
-		],
-//    root: 'images',
+var storeStreets = new Ext.data.JsonStore({
+//    data: 
+//    	[
+//			{ "street":"PIPPO" , "place":"Doe", "postalcode":"1" ,"countrycode":"sss", "pos":"1 13"},
+//			{ "street":"PROVA" , "place":"Doe", "postalcode":"1" ,"countrycode":"sss", "pos":"1 13"}
+// { "firstName":"Anna" , "lastName":"Smith", "surname":"2" },
+// { "firstName":"Alessio" , "lastName": "Casini", "surname":"3" },
+// { "firstName":"Peter" , "lastName": "Jones", "surname":"4" }
+//		],
+// root: 'images',
     fields: [
-        'firstName', 'lastName'
+        'street', 'place', 'postalcode', 'pos', 'countrycode'
     ]
 });
-pippo.load();
+storeStreets.load();
 
-function updateStore(){
-	
-}
-
+var position;

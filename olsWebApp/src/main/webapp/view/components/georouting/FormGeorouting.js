@@ -1,6 +1,8 @@
 Ext.ns('GEO');
 var host = document.location.host;
 var storeList = [];
+var namespace = 'http://www.opengis.net/xls';
+var namespace2 = 'http://www.opengis.net/gml';
 
 GEO.GeoroutingForm = Ext.extend(Ext.form.FormPanel, {
 	
@@ -66,8 +68,7 @@ GEO.GeoroutingForm = Ext.extend(Ext.form.FormPanel, {
 			            		var xmlhttp = null;
 //			            		var parseXml;
 //			            		var xmlResponde;
-			            		var namespace = 'http://www.opengis.net/xls';
-			            		var namespace2 = 'http://www.opengis.net/gml';
+			            		
 			            		
 			            		if (window.XMLHttpRequest){
 			            			// code for IE7+, Firefox, Chrome, Opera, Safari
@@ -79,7 +80,6 @@ GEO.GeoroutingForm = Ext.extend(Ext.form.FormPanel, {
 			            		
 			            		
 			            		var url = "http://"+host+"/geoserver/ols";
-			            		alert(url);
 			            		var xml = "<?xml version='1.0' encoding='UTF-8'?>"
 			            					+"<GeocodeRequest xmlns='http://www.opengis.net/xls'>"
 			            					+"	<Address countryCode='IT'>"
@@ -103,39 +103,8 @@ GEO.GeoroutingForm = Ext.extend(Ext.form.FormPanel, {
 			            			    case 200: // Do the Do
 			            			    	
 			            			    	xml = xmlhttp.responseXML;
-			            			    	alert(xmlhttp.responseText);
-//			            			    	alert(the_object);
-			            			    	
-//			            			    	nodeList = xml.getElementsByTagNameNS("*", "GeocodedAddress");
-			            			    	nodeAddress = xml.getElementsByTagNameNS(namespace, "GeocodedAddress");
-			            			    	var store = [];
-			            			    	for (var i=0; i<nodeAddress.length; i++){
-			            			    		pos = xml.getElementsByTagNameNS(namespace2, "pos").item(i);
-			            			    		var positions = pos.firstChild.nodeValue.split(" ");
-			            			    		lon = positions[0];
-			            			    		lat = positions[1];
-			            			    		var street = xml.getElementsByTagNameNS(namespace, "Street").item(i);
-			            			    		var place = xml.getElementsByTagNameNS(namespace, "Place").item(i);
-			            			    		
-			            			    		
-			            			    		store.push(geocodingResponse(street, lon, lat, place));
-			            			    		
-//			            			    		document.getElementById("myDiv").innerHTML=xmlhttp.responseText;
-
-			            			    	}
-			            			    	//-----------------
-			            			    	//Definizione JSON
-			            			    	//-----------------
-			            			    	var employees = [
-																{ "firstName":"John" , "lastName":"Doe" }, 
-																{ "firstName":"Anna" , "lastName":"Smith" }, 
-																{ "firstName":"Peter" , "lastName": "Jones" }
-															];
-			            			    	alert(employees);
-			            			    	alert(employees[0].lastName);
-			            			    	
-			            			    	Ext.getCmp('streesList').handler(employees);
-			            			    	storeList = store; 
+			            			    	var streetsData  = toJSON(xml);
+			            			    	Ext.getCmp('streesList').handler(streetsData);
 			            			    	
 			            			        break;
 			            			    case 404: // Error: 404 - Resource not found!
@@ -205,47 +174,19 @@ Ext.reg('georoutingform', GEO.GeoroutingForm);
 /*
  * Function to create a JSON array
  */
-function toJSON(){
-	
+function toJSON(xml){
+	jsonObj = [];
+	nodeAddress = xml.getElementsByTagNameNS(namespace, "GeocodedAddress");
+	for(var i=0; i<nodeAddress.length; i++){
+		var position = xml.getElementsByTagNameNS(namespace2, "pos").item(i).firstChild.nodeValue;
+		var streetName = xml.getElementsByTagNameNS(namespace, "Street").item(i).firstChild.nodeValue;
+		var placeName = xml.getElementsByTagNameNS(namespace, "Place").item(i).firstChild.nodeValue;
+		var postalCodeValue = xml.getElementsByTagNameNS(namespace, "PostalCode").item(i).firstChild.nodeValue;
+		var countryCodeValue = xml.getElementsByTagNameNS(namespace, "Address").item(i).firstChild.nodeValue;
+		
+		jsonObj.push(
+			{street: streetName, place: placeName,  postalcode: postalCodeValue, countrycode: countryCodeValue, pos: position}
+		);
+	}
+	return jsonObj;
 }
-
-function geocodingResponse(toponimo, lon, lat, country, postalCode){
-	this.toponimo = toponimo;
-	this.lon = lon;
-	this.lat = lat;
-	this.country = country;
-	this.postalCode = postalCode;
-	
-	function getToponimo(){
-		return this.toponimo;
-	}
-	
-	function setToponimo(toponimo){
-		return this.toponimo = toponimo;
-	}
-	
-	function getLon(){
-		return this.lon;
-	}
-	
-	function setLon(lon){
-		this.lon = lon;
-	}
-	
-	function getLan(){
-		return this.lan;
-	}
-	
-	function setLan(lan){
-		this.lan = lan;
-	}
-	
-	function getCountry(){
-		return this.country;
-	}
-	
-	function setCountry(country){
-		this.country = country;
-	}
-}
-
