@@ -78,7 +78,6 @@ GEO.GeoroutingForm = Ext.extend(Ext.form.FormPanel, {
 			            			xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
 			            		}
 			            		
-			            		
 			            		var url = "http://"+host+"/geoserver/ols";
 			            		var xml = "<?xml version='1.0' encoding='UTF-8'?>"
 			            					+"<GeocodeRequest xmlns='http://www.opengis.net/xls'>"
