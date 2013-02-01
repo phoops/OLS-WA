@@ -4,81 +4,112 @@ GEO.ListGeoroutingForm = Ext.extend(Ext.form.FormPanel, {
     	var config = {
 		        labelWidth: 75, // label settings here cascade unless overridden
 		        frame:true,
-		        title: 'List Result Georouting',
+		        title: 'List Result OLS',
 		        bodyStyle:'padding:5px',
 		        cls: 'floating-form_right',
 		        width: '78%',
 		        height: 200,
 		        defaults: {width: 230},
-		        defaultType: 'listview',
+		        defaultType: 'grid',
 		
 		        items: [
 		        {
-		        	  	store: storeStreets,
+			        	stripeRows: true,
+//	        	          autoExpandColumn: 'street',
+	        	          height: 250,
+	        	          width: 600,
+	        	          title: 'Results',
+	        	          // config options for stateful behavior
+	        	          stateful: true,
+	        	          
+		        		store: store,
 		        	    id:"streesList",
 		        	    singleSelect : true,
 		        	    emptyText: 'No Streets to display',
 		        	    width: '100%',
 		                height:250,
-//		                collapsible:true,
-		        	    handler: function(storeData){
-		        	    	var storeStreets = new Ext.data.JsonStore({
-		        	    	    data: storeData,
-		        	    	    fields: [
-		        	    	             'street', 'place', 'postalcode', 'countrycode', 'pos'
-		        	    	    ]
-		        	    	});
-// storeStreets.load();
-// this.getStore().loadRecords(storeStreets);
-		        	    	this.setStore(storeStreets);
-		        	    	
-		        	    },
 		        	    reserveScrollOffset: true,
-		        	    columns: [{
-		        	        header: 'Street Name',
-		        	        resizable: false,
-		        	        width: .3,
-		        	        height: '100%',
-		        	        dataIndex: 'street'
-		        	    },{
-		        	        header: 'Place',
-		        	        resizable: false,
-		        	        width: .2,
-		        	        height: '100%',
-		        	        dataIndex: 'place'
-		        	    },{
-		        	        header: 'Postal Code',
-		        	        resizable: false,
-		        	        width: .1,
-		        	        height: '100%',
-		        	        dataIndex: 'postalcode'
-		        	    },{
-		        	        header: 'Country Code',
-		        	        resizable: false,
-		        	        width: .1,
-		        	        height: '100%',
-		        	        dataIndex: 'countrycode'
-		        	    }]
-		        	    
-		        	    ,listeners:{
-		        	    	render: function(e, record){
-		        	    		this.on('click', function(){
-		        	    			element = this.getSelectedRecords();
-		        	    			position = element[0].json.pos;
-		        	    			// Create the event for zoom
-		        	    			var evt = document.createEvent("Event");
-		        	    			evt.initEvent("georoutingEvent",true,true);
-		        	    			evt.pos = position;
-		        	    			document.dispatchEvent(evt);
-		        	    		});
-		        	    	}
-		        	    }
+		        	    handler: function(storeData){
+		        	    	store.loadData(storeData);
+		        	    },
+		        	    columns: [
+								{
+								    xtype: 'actioncolumn',
+								    width: 25,
+								    items: [{
+								        icon   : '../resources/img/MapMarker.png',  // Use a URL in the icon config
+								        tooltip: 'Zoom into map',
+								        handler: function(grid, rowIndex, colIndex) {
+								            var rec = store.getAt(rowIndex);
+								            position = rec.get('pos');
+								            //Create the event for zoom
+								            var evt = document.createEvent("Event");
+								            evt.initEvent("georoutingEvent",true,true);
+								            evt.pos = position;
+								            document.dispatchEvent(evt);
+								        }
+								    }]
+								},
+		        	              {
+		        	                  id       :'street',
+		        	                  header   : 'Street Name', 
+		        	                  width    : 300, 
+		        	                  sortable : true, 
+		        	                  dataIndex: 'street'
+		        	              },
+		        	              {
+		        	                  header   : 'Place', 
+		        	                  width    : 60, 
+		        	                  sortable : true, 
+		        	                  dataIndex: 'place'
+		        	              },
+		        	              {
+		        	                  header   : 'Postal Code', 
+		        	                  width    : 80, 
+		        	                  sortable : true, 
+		        	                  dataIndex: 'postalcode'
+		        	              },
+		        	              {
+		        	                  header   : 'Country Code', 
+		        	                  width    : 80, 
+		        	                  sortable : true, 
+		        	                  dataIndex: 'country'
+		        	              },
+		        	              {
+		        	                  header   : 'Coordinates', 
+		        	                  width    : 120, 
+		        	                  sortable : true, 
+		        	                  dataIndex: 'pos'
+		        	              },
+		        	              {
+		        	                  xtype: 'actioncolumn',
+		        	                  width: 50,
+		        	                  items: [{
+		        	                      icon   : '../resources/img/start.png',  // Use a URL in the icon config
+		        	                      tooltip: 'Start Point',
+		        	                      handler: function(grid, rowIndex, colIndex) {
+		        	                          var rec = store.getAt(rowIndex);
+		        	                          alert("Start Point " + rec.get('street'));
+		        	                      }
+		        	                  }]
+		        	              },
+		        	              {
+		        	                  xtype: 'actioncolumn',
+		        	                  width: 50,
+		        	                  items: [{
+		        	                      icon   : '../resources/img/stop.png',  // Use a URL in the icon config
+		        	                      tooltip: 'End Point',
+		        	                      handler: function(grid, rowIndex, colIndex) {
+		        	                          var rec = store.getAt(rowIndex);
+		        	                          alert("End Point " + rec.get('street'));
+		        	                      }
+		        	                  }]
+		        	              }
+		        	          ]
 		          }
 		        ]
     	};
     	
-    	// Add Listener
-    	this.addListener("prova", this.prova);
     	// apply config
     	Ext.apply(this, Ext.apply(this.initialConfig, config));
     	GEO.ListGeoroutingForm.superclass.initComponent.call(this);
@@ -86,20 +117,43 @@ GEO.ListGeoroutingForm = Ext.extend(Ext.form.FormPanel, {
 });
 Ext.reg('listgeoroutingform', GEO.ListGeoroutingForm);
 
-var storeStreets = new Ext.data.JsonStore({
-//    data: 
-//    	[
-//			{ "street":"PIPPO" , "place":"Doe", "postalcode":"1" ,"countrycode":"sss", "pos":"1 13"},
-//			{ "street":"PROVA" , "place":"Doe", "postalcode":"1" ,"countrycode":"sss", "pos":"1 13"}
-// { "firstName":"Anna" , "lastName":"Smith", "surname":"2" },
-// { "firstName":"Alessio" , "lastName": "Casini", "surname":"3" },
-// { "firstName":"Peter" , "lastName": "Jones", "surname":"4" }
-//		],
-// root: 'images',
+/**
+ * Set the start point for Routing Navigation
+ * @param {Object} val , the name of start point
+ */
+function setStartPoint(val) {
+//    if (val > 0) {
+//        return '<span style="color:green;">' + val + '</span>';
+//    } else if (val < 0) {
+//        return '<span style="color:red;">' + val + '</span>';
+//    }
+//    return val;
+}
+
+/**
+ * Set the end poitn for Routing Navigation
+ * @param {Object} val - the name of end point
+ */
+function setEndPoint(val) {
+//    if (val > 0) {
+//        return '<span style="color:green;">' + val + '%</span>';
+//    } else if (val < 0) {
+//        return '<span style="color:red;">' + val + '%</span>';
+//    }
+//    return val;
+}
+
+// create the data store
+var store = new Ext.data.ArrayStore({
     fields: [
-        'street', 'place', 'postalcode', 'pos', 'countrycode'
+       {name: 'street'},
+       {name: 'place'},
+       {name: 'postalcode'},
+       {name: 'country'},
+       {name: 'pos'}
     ]
 });
-storeStreets.load();
+// manually load local data
+store.loadData();
 
 var position;

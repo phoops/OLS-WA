@@ -1,0 +1,17 @@
+/*!
+ * Ext JS Library 3.4.0 - Custom CSS for GeoComponent
+ */
+
+.floating-form_left
+{
+    display: inline;
+    float:left;
+}
+
+.floating-form_right
+{
+    display: inline;
+    float:right;
+}
+
+

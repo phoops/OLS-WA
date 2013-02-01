@@ -20,17 +20,59 @@
 <script type="text/javascript" src="../resources/extJS/ext-all-debug.js"></script>
 
 
-<!-- extensions -->
+<!-- extensions Geocoding-->
 <script type="text/javascript" src="components/georouting/FormGeorouting.js"></script>
 <script type="text/javascript" src="components/georouting/ListViewGeorouting.js"></script>
+<!-- extensions Reverse Geocoding-->
+<script type="text/javascript" src="components/reverse/FormReverse.js"></script>
 
 </head>
 <!-- page specific http://vmap0.tiles.osgeo.org/wms/vmap0-->
 <body>
-	<fieldset style="width:100%; height:70%"> 
+	<fieldset style="width:100%; height:54%"> 
 		<div style="width:100%; height:100%" id="map"></div>
 	</fieldset>
       <script defer="defer" type="text/javascript">
+      	var formReverse = new RGEO.ReverseGeoroutingForm();
+    	//---------------------------------------------------------------
+    	//controllo aggiunto a openLayer per il recupero delle coordinate
+    	//---------------------------------------------------------------
+    	OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
+              defaultHandlerOptions: {
+                  'single': true,
+                  'double': false,
+                  'pixelTolerance': 0,
+                  'stopSingle': false,
+                  'stopDouble': false
+              },
+
+              initialize: function(options) {
+                  this.handlerOptions = OpenLayers.Util.extend(
+                      {}, this.defaultHandlerOptions
+                  );
+                  OpenLayers.Control.prototype.initialize.apply(
+                      this, arguments
+                  );
+                  this.handler = new OpenLayers.Handler.Click(
+                      this, {
+                          'click': this.trigger
+                      }, this.handlerOptions
+                  );
+              },
+
+              trigger: function(e) {
+                  var lonlat = map.getLonLatFromPixel(e.xy);
+                  formReverse.getForm().findField('lat').setValue(lonlat.lat);
+                  formReverse.getForm().findField('lon').setValue(lonlat.lon);
+                  formReverse.callService(lonlat.lat, lonlat.lon);
+              }
+
+		});
+    	//--------------
+    	//Fine controllo
+    	//--------------
+      
+      
         var map = new OpenLayers.Map('map');
         var wms = new OpenLayers.Layer.WMS( "OpenLayers WMS",
             "http://labs.metacarta.com/wms/vmap0", {layers: 'basic'} );
@@ -39,17 +81,33 @@
         map.addLayer(markers);
         map.zoomToMaxExtent();
         
+      	//---------------------------------
+        //Aggiunta del controllo alla mappa
+        //---------------------------------
+        map.addControl(new OpenLayers.Control.LayerSwitcher());
+        // map.setCenter(new OpenLayers.LonLat(0, 0), 0);
+        map.zoomToMaxExtent();
+
+        var click = new OpenLayers.Control.Click();
+        map.addControl(click);
+        click.activate();
+        
+        
+        //--------------------------------
+        //Definizione dei componenti extJS
+        //--------------------------------
         Ext.onReady(function() {
     		Ext.QuickTips.init();
 
     		var form = new GEO.GeoroutingForm();
     		form.render(document.body);
-    		form.setHost('localhost');
+    		form.setHost(document.location.host + ":" + document.location.port);
     		
     		var listGeo = new GEO.ListGeoroutingForm();
     		listGeo.render(document.body);
     		
     		document.addEventListener("georoutingEvent",handlerZoom,false);
+    		
     		function handlerZoom(event){
     			var position = event.pos;
     			var lon = position.split(" ")[0];
@@ -64,6 +122,8 @@
 			    
     			map.setCenter(location,13);
     		}
+    		
+    		formReverse.render(document.body);
     	});
       </script>
 </body>

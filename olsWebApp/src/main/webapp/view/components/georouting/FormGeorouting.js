@@ -12,7 +12,7 @@ GEO.GeoroutingForm = Ext.extend(Ext.form.FormPanel, {
     			id: 'formId',
 		        labelWidth: 75, // label settings here cascade unless 	
 		        frame:true,
-		        title: 'Form Inputs Georouting',
+		        title: 'Georouting Informations',
 		        bodyStyle:'padding:5px 5px 0',
 		        width: '22%',
 		        cls: 'floating-form_left',
@@ -66,9 +66,6 @@ GEO.GeoroutingForm = Ext.extend(Ext.form.FormPanel, {
 			            		
 //			            		createXMLRequest(pValue, cValue, tValue);
 			            		var xmlhttp = null;
-//			            		var parseXml;
-//			            		var xmlResponde;
-			            		
 			            		
 			            		if (window.XMLHttpRequest){
 			            			// code for IE7+, Firefox, Chrome, Opera, Safari
@@ -102,8 +99,8 @@ GEO.GeoroutingForm = Ext.extend(Ext.form.FormPanel, {
 			            			    case 200: // Do the Do
 			            			    	
 			            			    	xml = xmlhttp.responseXML;
-			            			    	var streetsData  = toJSON(xml);
-			            			    	Ext.getCmp('streesList').handler(streetsData);
+			            			    	var streetDataArray = toArrayData(xml);
+			            			    	Ext.getCmp('streesList').handler(streetDataArray);
 			            			    	
 			            			        break;
 			            			    case 404: // Error: 404 - Resource not found!
@@ -137,20 +134,10 @@ GEO.GeoroutingForm = Ext.extend(Ext.form.FormPanel, {
 		        
     	};
     	
-    	//Add custom event
-    	this.addEvents('prova');
     	// apply config
     	Ext.apply(this, Ext.apply(this.initialConfig, config));
         //Start init Component
     	GEO.GeoroutingForm.superclass.initComponent.call(this);
-    }
-
-	,provaEvento:function(store) {
-		alert(store);
-        // do whatever is necessary to assign the employee to position
- 
-        // fire assigned event
-        this.fireEvent('prova', this, store);
     }
 
 	,setHost:function(hostName){
@@ -170,26 +157,43 @@ GEO.GeoroutingForm = Ext.extend(Ext.form.FormPanel, {
 });
 Ext.reg('georoutingform', GEO.GeoroutingForm);
 
+
 /*
- * Function to create a JSON array
+ * Function to create ArrayData
  */
-function toJSON(xml){
-	jsonObj = [];
+function toArrayData(xml){
+	arraDataObj = [];
 	nodeAddress = xml.getElementsByTagNameNS(namespace, "GeocodedAddress");
 	for(var i=0; i<nodeAddress.length; i++){
-		var position = xml.getElementsByTagNameNS(namespace2, "pos").item(i).firstChild.nodeValue;
-		if(xml.getElementsByTagNameNS(namespace, "Street").item(i) == null){
+		var item = nodeAddress.item(i);
+		var position = "";
+		if(item.getElementsByTagNameNS(namespace2, "pos").item(0) != null){
+			position = item.getElementsByTagNameNS(namespace2, "pos").item(0).firstChild.nodeValue;
+		}
+		if(item.getElementsByTagNameNS(namespace, "Street").item(0) == null){
 			Ext.MessageBox.alert('Error', 'Street not found!');
 			return;
 		}
-		var streetName = xml.getElementsByTagNameNS(namespace, "Street").item(i).firstChild.nodeValue;
-		var placeName = xml.getElementsByTagNameNS(namespace, "Place").item(i).firstChild.nodeValue;
-		var postalCodeValue = xml.getElementsByTagNameNS(namespace, "PostalCode").item(i).firstChild.nodeValue;
-		var countryCodeValue = xml.getElementsByTagNameNS(namespace, "Address").item(i).firstChild.nodeValue;
+		var streetName = "";
+		if(item.getElementsByTagNameNS(namespace, "Street").item(0) != null){
+			streetName = item.getElementsByTagNameNS(namespace, "Street").item(0).firstChild.nodeValue;
+		}
+		var placeName = "";
+		if(item.getElementsByTagNameNS(namespace, "Place").item(0) != null){
+			placeName = item.getElementsByTagNameNS(namespace, "Place").item(0).firstChild.nodeValue;
+		}
+		var postalCodeValue = "";
+		if(item.getElementsByTagNameNS(namespace, "PostalCode").item(0) != null){
+			postalCodeValue = item.getElementsByTagNameNS(namespace, "PostalCode").item(0).firstChild.nodeValue;
+		}
+		var countryCodeValue = "";
+		if(item.getElementsByTagNameNS(namespace, "Address").item(0) != null){
+			countryCodeValue = item.getElementsByTagNameNS(namespace, "Address").item(0).firstChild.nodeValue;
+		}
 		
-		jsonObj.push(
-			{street: streetName, place: placeName,  postalcode: postalCodeValue, countrycode: countryCodeValue, pos: position}
+		arraDataObj.push(
+			[streetName, placeName, postalCodeValue, countryCodeValue, position]
 		);
 	}
-	return jsonObj;
+	return arraDataObj;
 }
