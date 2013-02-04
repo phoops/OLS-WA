@@ -6,7 +6,8 @@ GEO.ListGeoroutingForm = Ext.extend(Ext.grid.GridPanel, {
         		frame:true,
             	stripeRows: true,
 //                autoExpandColumn: 'street',
-            	width: '78%',
+//            	width: '78%',
+            	width: '100%',
                 height: 200,
                 title: 'Open LS Results',
                 // config options for stateful behavior
@@ -77,7 +78,7 @@ GEO.ListGeoroutingForm = Ext.extend(Ext.grid.GridPanel, {
                                           tooltip: 'Start Point',
                                           handler: function(grid, rowIndex, colIndex) {
                                               var rec = store.getAt(rowIndex);
-                                              alert("Start Point " + rec.get('street'));
+                                              Ext.getCmp('routingID').getForm().findField('startPoint').setValue(rec.get('street'));
                                           }
                                       }]
                                   },
@@ -88,8 +89,8 @@ GEO.ListGeoroutingForm = Ext.extend(Ext.grid.GridPanel, {
                                           icon   : '../resources/img/stop.png',  // Use a URL in the icon config
                                           tooltip: 'End Point',
                                           handler: function(grid, rowIndex, colIndex) {
-                                              var rec = store.getAt(rowIndex);
-                                              alert("End Point " + rec.get('street'));
+                                        	  var rec = store.getAt(rowIndex);
+                                              Ext.getCmp('routingID').getForm().findField('endPoint').setValue(rec.get('street'));
                                           }
                                       }]
                                   },
@@ -109,8 +110,6 @@ GEO.ListGeoroutingForm = Ext.extend(Ext.grid.GridPanel, {
                                       }]
                                   }
                               ]
-
-
         };
 
         // apply config

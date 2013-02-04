@@ -44,7 +44,7 @@ RGEO.ReverseGeoroutingForm = Ext.extend(Ext.form.FormPanel, {
 	}
 
 	//Si occupa di richiamare il servizio di Reverse Geocoding
-	,callService:function(lat, lon){
+	,callService:function(lat, lon, hostName){
 		var xmlhttp = null;
 		
 		if (window.XMLHttpRequest){
@@ -55,7 +55,7 @@ RGEO.ReverseGeoroutingForm = Ext.extend(Ext.form.FormPanel, {
 			xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
 		}
 		
-		var url = "http://"+host+"/geoserver/solr";
+		var url = "http://"+hostName+"/geoserver/solr";
 		var xml = "<?xml version='1.0' encoding='UTF-8'?>"
 					+"<ReverseGeocodeRequest xmlns='http://www.opengis.net/xls'>"
 					+"	<Position>"+lat +" "+ lon+"</Position>"

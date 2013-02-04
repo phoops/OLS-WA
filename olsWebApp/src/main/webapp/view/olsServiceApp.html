@@ -25,6 +25,8 @@
 <script type="text/javascript" src="components/georouting/ListViewGeorouting.js"></script>
 <!-- extensions Reverse Geocoding-->
 <script type="text/javascript" src="components/reverse/FormReverse.js"></script>
+<!-- extensions Routing Navigation -->
+<script type="text/javascript" src="components/routing/FormRoutingNavigation.js"></script>
 
 </head>
 <!-- page specific http://vmap0.tiles.osgeo.org/wms/vmap0-->
@@ -64,7 +66,7 @@
                   var lonlat = map.getLonLatFromPixel(e.xy);
                   formReverse.getForm().findField('lat').setValue(lonlat.lat);
                   formReverse.getForm().findField('lon').setValue(lonlat.lon);
-                  formReverse.callService(lonlat.lat, lonlat.lon);
+                  formReverse.callService(lonlat.lat, lonlat.lon, document.location.host + ":" + document.location.port);
               }
 
 		});
@@ -99,15 +101,33 @@
         Ext.onReady(function() {
     		Ext.QuickTips.init();
 
+    		//--------------
+    		//Form Georuting
+    		//--------------
     		var form = new GEO.GeoroutingForm();
     		form.render(document.body);
     		form.setHost(document.location.host + ":" + document.location.port);
     		
+    		//-----------------------
+    		//Form Routing Navigation
+    		//-----------------------
+    		var formRN = new RNGEO.RoutinNavigationForm;
+    		formRN.render(document.body);
+    		
+    		//-----------------------
+    		//Form Reverse Georouting
+    		//-----------------------
+    		formReverse.render(document.body);
+    		
+    		//-----------------------
+    		//Lista dei Risulatti GEO
+    		//-----------------------
     		var listGeo = new GEO.ListGeoroutingForm();
     		listGeo.render(document.body);
     		
     		document.addEventListener("georoutingEvent",handlerZoom,false);
     		
+    		//Definizione del handler
     		function handlerZoom(event){
     			var position = event.pos;
     			var lon = position.split(" ")[0];
@@ -123,7 +143,6 @@
     			map.setCenter(location,13);
     		}
     		
-    		formReverse.render(document.body);
     	});
       </script>
 </body>

@@ -132,7 +132,7 @@ GEO.GeoroutingForm = Ext.extend(Ext.form.FormPanel, {
 		            	id: 'geoReset',
 		            	text: 'Reset',
 		            	handler: function(){
-			            	Ext.MessageBox.alert('Reset', 'Reset dei parametri nella form');
+//			            	Ext.MessageBox.alert('Reset', 'Reset dei parametri nella form');
 			            	Ext.getCmp('provincia').setValue(null);
 			            	Ext.getCmp('comune').setValue(null);
 			            	Ext.getCmp('via').setValue(null);
