@@ -10,7 +10,7 @@ RGEO.ReverseGeoroutingForm = Ext.extend(Ext.form.FormPanel, {
 		        bodyStyle:'padding:5px 5px 0',
 		        width: '22%',
 		        cls: 'floating-form_left',
-		        height: 200,
+		        height: 120,
 		        defaults: {width: 230},
 		        defaultType: 'textfield',	
 		        
