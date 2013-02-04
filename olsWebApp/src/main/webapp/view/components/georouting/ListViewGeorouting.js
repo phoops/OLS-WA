@@ -1,4 +1,3 @@
-
 Ext.ns('GEO');
 GEO.ListGeoroutingForm = Ext.extend(Ext.grid.GridPanel, {
     id:"streesList",
@@ -91,6 +90,21 @@ GEO.ListGeoroutingForm = Ext.extend(Ext.grid.GridPanel, {
                                           handler: function(grid, rowIndex, colIndex) {
                                               var rec = store.getAt(rowIndex);
                                               alert("End Point " + rec.get('street'));
+                                          }
+                                      }]
+                                  },
+                                  {
+                                      xtype: 'actioncolumn',
+                                      width: 50,
+                                      items: [{
+                                          icon   : '../resources/img/recalculate.png',  // Use a URL in the icon config
+                                          tooltip: 'Recalculate',
+                                          handler: function(grid, rowIndex, colIndex) {
+                                              var rec = store.getAt(rowIndex);
+                                              var value = rec.get('street');
+                                              //TODO: da eliminare lo split quando verrà restituito il nomero senza civico
+                                              var tValue = value.split(",")[0];
+                                              Ext.getCmp('geoSubmit').handler(tValue);
                                           }
                                       }]
                                   }

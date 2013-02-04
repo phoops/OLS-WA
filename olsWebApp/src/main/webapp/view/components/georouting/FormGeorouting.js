@@ -56,13 +56,21 @@ GEO.GeoroutingForm = Ext.extend(Ext.form.FormPanel, {
 		            {
 		            	id: 'geoSubmit',
 		            	text: 'Submit',
-		            	handler: function(){
+		            	handler: function(toponimo){
 		            		if(Ext.getCmp('provincia').isValid()
 		            				&& Ext.getCmp('comune').isValid()
 		            				&& Ext.getCmp('via').isValid()){
+		            			
+		            			var tValue = ""; 
+		            			
+		            			if(typeof toponimo == 'string'){
+		            				tValue = toponimo;
+		            			}else{
+		            				tValue = Ext.getCmp('via').getValue();
+		            			}
+		            			
 		            			var pValue = Ext.getCmp('provincia').getValue(); 
 			            		var cValue = Ext.getCmp('comune').getValue();
-			            		var tValue = Ext.getCmp('via').getValue();
 			            		
 //			            		createXMLRequest(pValue, cValue, tValue);
 			            		var xmlhttp = null;
