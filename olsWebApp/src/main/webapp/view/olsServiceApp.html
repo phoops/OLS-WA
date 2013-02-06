@@ -40,6 +40,15 @@
 		<div id="map"></div>
 	</fieldset>
       <script defer="defer" type="text/javascript">
+      	//--------------------------------------
+      	// Get control of the right-click event:
+		//--------------------------------------
+		document.getElementById('map').oncontextmenu = function(e){
+		 e = e?e:window.event;
+		 if (e.preventDefault) e.preventDefault(); // For non-IE browsers.
+		 else return false; // For IE browsers.
+		};
+		
       	var formReverse = new RGEO.ReverseGeoroutingForm();
     	//---------------------------------------------------------------
     	//controllo aggiunto a openLayer per il recupero delle coordinate
@@ -52,7 +61,7 @@
                   'stopSingle': false,
                   'stopDouble': false
               },
-
+              handleRightClicks:true,
               initialize: function(options) {
                   this.handlerOptions = OpenLayers.Util.extend(
                       {}, this.defaultHandlerOptions
@@ -62,7 +71,8 @@
                   );
                   this.handler = new OpenLayers.Handler.Click(
                       this, {
-                          'click': this.trigger
+                          'click': this.trigger,
+                          'rightclick': this.triggerRight
                       }, this.handlerOptions
                   );
               },
@@ -72,7 +82,25 @@
                   formReverse.getForm().findField('lat').setValue(lonlat.lat);
                   formReverse.getForm().findField('lon').setValue(lonlat.lon);
                   formReverse.callService(lonlat.lat, lonlat.lon, document.location.host + ":" + document.location.port);
+              },
+              
+              triggerRight: function(e) {
+            	  var lonlat = map.getLonLatFromPixel(e.xy);
+            	  
+            	  popup = new OpenLayers.Popup.FramedCloud("featurePopup",
+                          lonlat,
+                          new OpenLayers.Size(100,100),
+                          "<h2> Navigation </h2>" 
+//                           +"Longitudine: "+lonlat.lon+ "<br> Latidutine: "+lonlat.lat
+							+"<br><br><button href='#' onclick='addStartMarker("+lonlat.lon+","+lonlat.lat+");'>"
+                          	+"<IMG SRC='../resources/img/ini.png' ALIGN='absmiddle'> Start from here</button>"+
+                          	"<button href='#' onclick='addEndMarker("+lonlat.lon+","+lonlat.lat+");'>"
+                          	+"<IMG SRC='../resources/img/fin.png' ALIGN='absmiddle'> End to here</button>",
+                          null, true);
+
+       			  map.addPopup(popup);
               }
+              
 
 		});
     	//--------------
@@ -171,6 +199,26 @@
     		}
     		
     	});
+        
+        function addEndMarker(lon, lat){
+        	var location = new OpenLayers.LonLat(lon,lat);
+			var size = new OpenLayers.Size(21,39);
+		    var offset = new OpenLayers.Pixel(-(size.w/2), -size.h);
+		    var icon = new OpenLayers.Icon('../resources/img/endPoint.png',size,offset);
+		    markers.addMarker(new OpenLayers.Marker(location,icon.clone())); 
+		  //TODO: Richiama il servizio di Reverse Geocoding
+      	}
+      	
+      	function addStartMarker(lon, lat){
+      		var location = new OpenLayers.LonLat(lon,lat);
+			var size = new OpenLayers.Size(21,39);
+		    var offset = new OpenLayers.Pixel(-(size.w/2), -size.h);
+		    var icon = new OpenLayers.Icon('../resources/img/startPoint.png',size,offset);
+		    markers.addMarker(new OpenLayers.Marker(location,icon.clone())); 
+		    //TODO: Richiama il servizio di Reverse Geocoding
+		    	
+      	}
+        
       </script>
 </body>
 </html>
