@@ -103,7 +103,7 @@
 			"Google Satellite",
 			{type: G_SATELLITE_MAP, numZoomLevels: 22}
 		);
-		map.addLayers([gphy, gmap, ghyb, gsat]);
+		map.addLayers([ghyb, gphy, gmap, gsat]);
 		//-----------------
 		//End Google Layers
 		//-----------------
@@ -170,7 +170,7 @@
 			    var icon = new OpenLayers.Icon('http://www.openlayers.org/dev/img/marker.png',size,offset);
 			    markers.addMarker(new OpenLayers.Marker(location,icon.clone())); 
 			    
-    			map.setCenter(location,15);
+    			map.setCenter(location,17);
     		}
     		
     	});
