@@ -3,6 +3,7 @@ var host = document.location.host;
 var namespace = 'http://www.opengis.net/xls';
 var namespace2 = 'http://www.opengis.net/gml';
 RGEO.ReverseGeoroutingForm = Ext.extend(Ext.form.FormPanel, {
+	collapsible: true,
 	initComponent:function() {
 		var config = {
 				id: 'formReverseId',

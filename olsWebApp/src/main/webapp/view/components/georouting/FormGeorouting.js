@@ -5,7 +5,7 @@ var namespace = 'http://www.opengis.net/xls';
 var namespace2 = 'http://www.opengis.net/gml';
 
 GEO.GeoroutingForm = Ext.extend(Ext.form.FormPanel, {
-	
+	collapsible: true,	
     initComponent:function() {
     	var config = 
     	{

@@ -2,6 +2,7 @@ Ext.ns('RNGEO');
 var host = document.location.host;
 RNGEO.RoutinNavigationForm = Ext.extend(Ext.form.FormPanel, {
 	id: 'routingID',
+	collapsible: true,
     initComponent:function() {
     	var config = 
     	{
