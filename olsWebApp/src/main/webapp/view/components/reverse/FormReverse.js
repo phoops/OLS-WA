@@ -1,5 +1,7 @@
 Ext.ns('RGEO');
 var host = document.location.host;
+var namespace = 'http://www.opengis.net/xls';
+var namespace2 = 'http://www.opengis.net/gml';
 RGEO.ReverseGeoroutingForm = Ext.extend(Ext.form.FormPanel, {
 	initComponent:function() {
 		var config = {
@@ -75,7 +77,7 @@ RGEO.ReverseGeoroutingForm = Ext.extend(Ext.form.FormPanel, {
 			    case 200: // Do the Do
 			    	
 			    	xml = xmlhttp.responseXML;
-			    	var streetsData  = toArrayData(xml);
+			    	var streetsData  = toArrayDataReverse(xml);
 			    	Ext.getCmp('streesList').handler(streetsData);
 			    	
 			        break;
@@ -98,9 +100,9 @@ Ext.reg('reversegeoroutingform', RGEO.ReverseGeoroutingForm);
 /*
  * Function to create ArrayData
  */
-function toArrayData(xml){
+function toArrayDataReverse(xml){
 	arraDataObj = [];
-	nodeAddress = xml.getElementsByTagNameNS(namespace, "GeocodedAddress");
+	nodeAddress = xml.getElementsByTagNameNS(namespace, "ReverseGeocodedLocation");
 	for(var i=0; i<nodeAddress.length; i++){
 		var item = nodeAddress.item(i);
 		var position = "";
