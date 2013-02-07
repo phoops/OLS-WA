@@ -58,7 +58,7 @@ RNGEO.RoutinNavigationForm = Ext.extend(Ext.form.FormPanel, {
 		            		alert(startValue);
 		            		var endValue = Ext.getCmp('endPoint').getValue();
 		            		alert(endValue);
-		            		var url = "http://"+host+"/geoserver/solr";
+		            		var url = "http://"+host+"/solr";
 		            		alert(url);
 		            		
 		            		

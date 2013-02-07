@@ -54,11 +54,14 @@ RGEO.ReverseGeoroutingForm = Ext.extend(Ext.form.FormPanel, {
 			// code for IE6, IE5
 			xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
 		}
-		
-		var url = "http://"+hostName+"/geoserver/solr";
+		var url = "http://"+host+"/geoserver/ols";
 		var xml = "<?xml version='1.0' encoding='UTF-8'?>"
-					+"<ReverseGeocodeRequest xmlns='http://www.opengis.net/xls'>"
-					+"	<Position>"+lat +" "+ lon+"</Position>"
+					+"<ReverseGeocodeRequest xmlns='http://www.opengis.net/xls' xmlns:gml='http://www.opengis.net/gml'>"
+					+"	<Position>"
+					+"		<gml:Point>"
+					+"			<gml:pos>"+lat +" "+ lon+"</gml:pos>"
+					+"		</gml:Point>"
+					+"	</Position>"
 					+"</ReverseGeocodeRequest>";
 		
 		//Handler POST request
