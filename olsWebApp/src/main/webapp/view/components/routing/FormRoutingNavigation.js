@@ -21,16 +21,26 @@ RNGEO.RoutinNavigationForm = Ext.extend(Ext.form.FormPanel, {
 		          {
 		        	  fieldLabel: 'Start Point',
 		        	  id: 'startPoint',
+		        	  handler: function(storeData){
+		        		  	var store = storeData.toString();
+		        		  	var values=store.split(",");
+				        	this.setValue(values[0]);
+		        	  },
 		        	  validator: function(v) {
 		        		  if (v == null || v === "" || v.lenght == 0) {
 		        		        return "Value is incorrect";
 		        		    }
 		        		    return true;
-                      }
+                      },
 		          },
 		          {
 		        	  fieldLabel: 'End Point',	    	   
 		        	  id: 'endPoint',
+		        	  handler: function(storeData){
+		        		  	var store = storeData.toString();
+		        		  	var values=store.split(",");
+				        	this.setValue(values[0]);
+		        	  },
 		        	  validator: function(v) {
 		        		  if (v == null || v === "" || v.lenght == 0) {
 		        		        return "Value is incorrect";

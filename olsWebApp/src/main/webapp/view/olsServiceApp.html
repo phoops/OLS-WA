@@ -41,6 +41,12 @@
 		<div id="map"></div>
 	</fieldset>
       <script defer="defer" type="text/javascript">
+      	//-------------------------------------
+      	//Global variable
+      	//-------------------------------------
+      	var startMarker = null;
+      	var endMarker = null;
+      	
       	//--------------------------------------
       	// Get control of the right-click event:
 		//--------------------------------------
@@ -83,7 +89,7 @@
                   var lonlat = map.getLonLatFromPixel(e.xy);
                   formReverse.getForm().findField('lat').setValue(lonlat.lat);
                   formReverse.getForm().findField('lon').setValue(lonlat.lon);
-                  formReverse.callService(lonlat.lat, lonlat.lon, document.location.host + ":" + document.location.port);
+                  formReverse.callService(lonlat.lat, lonlat.lon, document.location.host + ":" + document.location.port, 'reverse');
                   
                   markers.clearMarkers();
 				  var location = new OpenLayers.LonLat(lonlat.lon,lonlat.lat);
@@ -209,25 +215,101 @@
     			map.setCenter(location,17);
     		}
     		
+    		
+    		//---------------------------------
+    		//Dispacher dell'evento START Point
+    		//---------------------------------
+    		document.addEventListener("startPointEvent",handlerZoomStartPoint,false);
+    		
+    		//Definizione del handler
+    		function handlerZoomStartPoint(event){
+    			var position = event.pos;
+    			var lon = position.split(" ")[0];
+    			var lat = position.split(" ")[1];
+    			
+				//Add Marker Place for startPoint
+				var location = new OpenLayers.LonLat(lon,lat);
+				var size = new OpenLayers.Size(21,39);
+			    var offset = new OpenLayers.Pixel(-(size.w/2), -size.h);
+			    var icon = new OpenLayers.Icon('../resources/img/startPoint.png',size,offset);
+			    
+			    if(startMarker != null)
+			    	markers.removeMarker(startMarker);
+			    startMarker = new OpenLayers.Marker(location,icon.clone())
+			    
+			    markers.addMarker(startMarker); 
+			    
+    			map.setCenter(location,17);
+    		}
+    		
+    		//-------------------------------
+    		//Dispacher dell'evento END Point
+    		//-------------------------------
+    		document.addEventListener("endPointEvent",handlerZoomEndPoint,false);
+    		
+    		//Definizione del handler
+    		function handlerZoomEndPoint(event){
+    			var position = event.pos;
+    			var lon = position.split(" ")[0];
+    			var lat = position.split(" ")[1];
+    			
+				//Add Marker Place for startPoint
+				var location = new OpenLayers.LonLat(lon,lat);
+				var size = new OpenLayers.Size(21,39);
+			    var offset = new OpenLayers.Pixel(-(size.w/2), -size.h);
+			    var icon = new OpenLayers.Icon('../resources/img/endPoint.png',size,offset);
+			    
+			    if(endMarker != null)
+			    	markers.removeMarker(endMarker);
+			    endMarker = new OpenLayers.Marker(location,icon.clone())
+			    
+			    markers.addMarker(endMarker); 
+			    
+    			map.setCenter(location,17);
+    		}
+    		
     	});
         
+        /**
+        * Questa funzione si occupa di aggiungere un marker "Iniziale" alla mappa
+        * dal quale verra' calcolato il percorso tramite il servizio di routingNavigation
+        */
         function addEndMarker(lon, lat){
         	var location = new OpenLayers.LonLat(lon,lat);
 			var size = new OpenLayers.Size(21,39);
 		    var offset = new OpenLayers.Pixel(-(size.w/2), -size.h);
 		    var icon = new OpenLayers.Icon('../resources/img/endPoint.png',size,offset);
-		    markers.addMarker(new OpenLayers.Marker(location,icon.clone())); 
-		  //TODO: Richiama il servizio di Reverse Geocoding
+		    
+		    if(endMarker != null)
+		    	markers.removeMarker(endMarker);
+		    endMarker = new OpenLayers.Marker(location,icon.clone())
+		    
+		    markers.addMarker(endMarker); 
+		    
+		    formReverse.getForm().findField('lat').setValue(lat);
+            formReverse.getForm().findField('lon').setValue(lon);
+            formReverse.callService(lat, lon, document.location.host + ":" + document.location.port, 'reverseEnd');
       	}
       	
+        /**
+         * Questa funzione si occupa di aggiungere un marker "Finale" alla mappa
+         * dal quale verra' calcolato il percorso tramite il servizio di routingNavigation
+         */
       	function addStartMarker(lon, lat){
       		var location = new OpenLayers.LonLat(lon,lat);
 			var size = new OpenLayers.Size(21,39);
 		    var offset = new OpenLayers.Pixel(-(size.w/2), -size.h);
 		    var icon = new OpenLayers.Icon('../resources/img/startPoint.png',size,offset);
-		    markers.addMarker(new OpenLayers.Marker(location,icon.clone())); 
-		    //TODO: Richiama il servizio di Reverse Geocoding
-		    	
+		    
+		    if(startMarker != null)
+		    	markers.removeMarker(startMarker);
+		    startMarker = new OpenLayers.Marker(location,icon.clone())
+		    
+		    markers.addMarker(startMarker);
+		    
+		    formReverse.getForm().findField('lat').setValue(lat);
+            formReverse.getForm().findField('lon').setValue(lon);
+            formReverse.callService(lat, lon, document.location.host + ":" + document.location.port, 'reverseStart');
       	}
         
       </script>

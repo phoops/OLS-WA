@@ -91,6 +91,12 @@ GEO.ListGeoroutingForm = Ext.extend(Ext.grid.GridPanel, {
                                           handler: function(grid, rowIndex, colIndex) {
                                               var rec = store.getAt(rowIndex);
                                               Ext.getCmp('routingID').getForm().findField('startPoint').setValue(rec.get('street'));
+                                              position = rec.get('pos');
+                                              //Create the event for Start Point
+                                              var evt = document.createEvent("Event");
+                                              evt.initEvent("startPointEvent",true,true);
+                                              evt.pos = position;
+                                              document.dispatchEvent(evt);
                                           }
                                       }]
                                   },
@@ -103,6 +109,12 @@ GEO.ListGeoroutingForm = Ext.extend(Ext.grid.GridPanel, {
                                           handler: function(grid, rowIndex, colIndex) {
                                         	  var rec = store.getAt(rowIndex);
                                               Ext.getCmp('routingID').getForm().findField('endPoint').setValue(rec.get('street'));
+                                              position = rec.get('pos');
+                                              //Create the event for End Point
+                                              var evt = document.createEvent("Event");
+                                              evt.initEvent("endPointEvent",true,true);
+                                              evt.pos = position;
+                                              document.dispatchEvent(evt);
                                           }
                                       }]
                                   },
