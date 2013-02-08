@@ -12,7 +12,7 @@ GEO.GeoroutingForm = Ext.extend(Ext.form.FormPanel, {
     			id: 'formId',
 		        labelWidth: 75, // label settings here cascade unless 	
 		        frame:true,
-		        title: 'Georouting Informations',
+		        title: 'Geocoding Informations',
 		        bodyStyle:'padding:5px 5px 0',
 		        width: '22%',
 		        cls: 'floating-form_left',
@@ -23,23 +23,25 @@ GEO.GeoroutingForm = Ext.extend(Ext.form.FormPanel, {
 		        items: [
 		          {
 		        	  fieldLabel: 'Provincia',
-		        	  id: 'provincia',
-		        	  validator: function(v) {
-		        		  if (v === "" || v == null || v.lenght == 0) {
-		        		        return "Value is incorrect";
-		        		    }
-		        		    return true;
-                      }
+		        	  id: 'provincia'
+//		        		  ,
+//		        	  validator: function(v) {
+//		        		  if (v === "" || v == null || v.lenght == 0) {
+//		        		        return "Value is incorrect";
+//		        		    }
+//		        		    return true;
+//                      }
 		          },
 		          {
 		        	  fieldLabel: 'Comune	',	    	   
-		        	  id: 'comune',
-		        	  validator: function(v) {
-		        		  if (v === "" || v == null || v.lenght == 0) {
-		        		        return "Value is incorrect";
-		        		    }
-		        		    return true;
-		        	  }
+		        	  id: 'comune'
+//		        		  ,
+//		        	  validator: function(v) {
+//		        		  if (v === "" || v == null || v.lenght == 0) {
+//		        		        return "Value is incorrect";
+//		        		    }
+//		        		    return true;
+//		        	  }
 		          },
 		          {
 		        	  fieldLabel: 'Toponimo', 
@@ -186,21 +188,36 @@ function toArrayData(xml){
 		if(item.getElementsByTagNameNS(namespace, "Street").item(0) != null){
 			streetName = item.getElementsByTagNameNS(namespace, "Street").item(0).firstChild.nodeValue;
 		}
-		var placeName = "";
-		if(item.getElementsByTagNameNS(namespace, "Place").item(0) != null){
-			placeName = item.getElementsByTagNameNS(namespace, "Place").item(0).firstChild.nodeValue;
-		}
+//		var placeName = "";
+//		if(item.getElementsByTagNameNS(namespace, "Place").item(0) != null){
+//			placeName = item.getElementsByTagNameNS(namespace, "Place").item(0).firstChild.nodeValue;
+//		}
 		var postalCodeValue = "";
 		if(item.getElementsByTagNameNS(namespace, "PostalCode").item(0) != null){
 			postalCodeValue = item.getElementsByTagNameNS(namespace, "PostalCode").item(0).firstChild.nodeValue;
 		}
 		var countryCodeValue = "";
 		if(item.getElementsByTagNameNS(namespace, "Address").item(0) != null){
-			countryCodeValue = item.getElementsByTagNameNS(namespace, "Address").item(0).firstChild.nodeValue;
+			countryCodeValue = item.getElementsByTagNameNS(namespace, "Address").item(0).getAttribute("countryCode");
+		}
+		var countrySubdivisionValue = "";
+		var municipalityValue = "";
+		var countrySecondarySubdivisioValue = "";
+		for(var j=0; j<item.getElementsByTagNameNS(namespace, "Place").length; j++){
+			if(item.getElementsByTagNameNS(namespace, "Place").item(j).getAttribute("type") != null
+					|| item.getElementsByTagNameNS(namespace, "Place").item(j).getAttribute("type") != ""){
+				if(item.getElementsByTagNameNS(namespace, "Place").item(j).getAttribute("type") == 'Municipality'){
+					municipalityValue = item.getElementsByTagNameNS(namespace, "Place").item(j).firstChild.nodeValue;
+				}else if(item.getElementsByTagNameNS(namespace, "Place").item(j).getAttribute("type") == 'CountrySubdivision'){
+					countrySubdivisionValue = item.getElementsByTagNameNS(namespace, "Place").item(j).firstChild.nodeValue;
+				}else if(item.getElementsByTagNameNS(namespace, "Place").item(j).getAttribute("type") == 'CountrySecondarySubdivision'){
+					countrySecondarySubdivisioValue = item.getElementsByTagNameNS(namespace, "Place").item(j).firstChild.nodeValue;
+				}
+			}
 		}
 		
 		arraDataObj.push(
-			[streetName, placeName, postalCodeValue, countryCodeValue, position]
+			[streetName, municipalityValue, postalCodeValue, countryCodeValue, countrySubdivisionValue, countrySecondarySubdivisioValue, position]
 		);
 	}
 	return arraDataObj;

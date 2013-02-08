@@ -48,25 +48,37 @@ GEO.ListGeoroutingForm = Ext.extend(Ext.grid.GridPanel, {
                                   },
                                   {
                                       header   : 'Place',
-                                      width    : 60,
+                                      width    : 180,
                                       sortable : true,
                                       dataIndex: 'place'
                                   },
                                   {
                                       header   : 'Postal Code',
-                                      width    : 80,
+                                      width    : 90,
                                       sortable : true,
                                       dataIndex: 'postalcode'
                                   },
                                   {
                                       header   : 'Country Code',
-                                      width    : 80,
+                                      width    : 90,
                                       sortable : true,
                                       dataIndex: 'country'
                                   },
                                   {
-                                      header   : 'Coordinates',
+                                      header   : 'Country Subdivision',
                                       width    : 120,
+                                      sortable : true,
+                                      dataIndex: 'subdivision'
+                                  },
+                                  {
+                                      header   : 'Country Secondary Subdivision',
+                                      width    : 120,
+                                      sortable : true,
+                                      dataIndex: 'secondarysubdivisio'
+                                  },
+                                  {
+                                      header   : 'Coordinates',
+                                      width    : 130,
                                       sortable : true,
                                       dataIndex: 'pos'
                                   },
@@ -153,6 +165,8 @@ var store = new Ext.data.ArrayStore({
        {name: 'place'},
        {name: 'postalcode'},
        {name: 'country'},
+       {name: 'subdivision'},
+       {name: 'secondarysubdivisio'},
        {name: 'pos'}
     ]
 });
