@@ -13,9 +13,9 @@
 <!-- Open Layers Lybrary -->
 <script src="http://openlayers.org/api/OpenLayers.js"></script>
 <!-- Google API -->
-<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
-<script src="http://maps.google.com/maps?file=api&amp;v=2&amp;key=ABQIAAAAjpkAC9ePGem0lIq5XcMiuhR_wWLPFku8Ix9i2SXYRVK3e45q1BQUd_beF8dtzKET_EteAjPdGDwqpQ"></script>
-<script src="http://maps.gstatic.com/intl/it_ALL/mapfiles/441c/maps2.api/main.js" type="text/javascript"></script>
+<!-- <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script> -->
+<!-- <script src="http://maps.google.com/maps?file=api&amp;v=2&amp;key=ABQIAAAAjpkAC9ePGem0lIq5XcMiuhR_wWLPFku8Ix9i2SXYRVK3e45q1BQUd_beF8dtzKET_EteAjPdGDwqpQ"></script> -->
+<!-- <script src="http://maps.gstatic.com/intl/it_ALL/mapfiles/441c/maps2.api/main.js" type="text/javascript"></script> -->
 
 
 <!-- ** Javascript ** -->
@@ -46,6 +46,9 @@
       	//-------------------------------------
       	var startMarker = null;
       	var endMarker = null;
+      	var endFeature = null;
+      	var startFeature = null;
+      	var vectorLayer = new OpenLayers.Layer.Vector("Overlay");
       	
       	//--------------------------------------
       	// Get control of the right-click event:
@@ -124,28 +127,44 @@
     	//Fine controllo
     	//--------------
       
-        var map = new OpenLayers.Map('map');
+        var map = new OpenLayers.Map('map', {
+            controls:[
+                      new OpenLayers.Control.Navigation(),
+                      new OpenLayers.Control.PanZoomBar(),
+                      new OpenLayers.Control.LayerSwitcher(),
+                      new OpenLayers.Control.Attribution()],
+                      maxExtent: new OpenLayers.Bounds(-20037508.34,-20037508.34,20037508.34,20037508.34),
+                      maxResolution: 156543.0399,
+                      numZoomLevels: 21,
+                      units: 'm',
+                      projection: new OpenLayers.Projection("EPSG:900913"),
+                      displayProjection: new OpenLayers.Projection("EPSG:4326")
+                  } );
+        		
         
 		//-----------------
 		//Add Google Layers
 		//-----------------
-		var gphy = new OpenLayers.Layer.Google(
-			"Google Physical",
-			{type: G_PHYSICAL_MAP}
-		);
-		var gmap = new OpenLayers.Layer.Google(
-			"Google Streets", // the default
-			{numZoomLevels: 20}
-		);
-		var ghyb = new OpenLayers.Layer.Google(
-			"Google Hybrid",
-			{type: G_HYBRID_MAP, numZoomLevels: 20}
-		);
-		var gsat = new OpenLayers.Layer.Google(
-			"Google Satellite",
-			{type: G_SATELLITE_MAP, numZoomLevels: 22}
-		);
-		map.addLayers([ghyb, gphy, gmap, gsat]);
+// 		var gphy = new OpenLayers.Layer.Google(
+// 			"Google Physical",
+// 			{type: G_PHYSICAL_MAP}
+// 		);
+// 		var gmap = new OpenLayers.Layer.Google(
+// 			"Google Streets", // the default
+// 			{numZoomLevels: 20}
+// 		);
+// 		var ghyb = new OpenLayers.Layer.Google(
+// 			"Google Hybrid",
+// 			{type: G_HYBRID_MAP, numZoomLevels: 20}
+// 		);
+// 		var gsat = new OpenLayers.Layer.Google(
+// 			"Google Satellite",
+// 			{type: G_SATELLITE_MAP, numZoomLevels: 22}
+// 		);
+// 		map.addLayers([ghyb, gphy, gmap, gsat]);
+
+	
+		map.addLayer(new OpenLayers.Layer.OSM());
 		//-----------------
 		//End Google Layers
 		//-----------------
@@ -206,7 +225,10 @@
     			var lat = position.split(" ")[1];
 				//Add Marker Place
 				markers.clearMarkers();
-				var location = new OpenLayers.LonLat(lon,lat);
+// 				var location = new OpenLayers.LonLat(lon,lat);
+				var location = new OpenLayers.LonLat(lon,lat).transform(new OpenLayers.Projection("EPSG:4326"), new OpenLayers.Projection("EPSG:900913"));
+				
+				
 				var size = new OpenLayers.Size(21,25);
 			    var offset = new OpenLayers.Pixel(-(size.w/2), -size.h);
 			    var icon = new OpenLayers.Icon('http://www.openlayers.org/dev/img/marker.png',size,offset);
@@ -228,16 +250,47 @@
     			var lat = position.split(" ")[1];
     			
 				//Add Marker Place for startPoint
-				var location = new OpenLayers.LonLat(lon,lat);
-				var size = new OpenLayers.Size(21,39);
-			    var offset = new OpenLayers.Pixel(-(size.w/2), -size.h);
-			    var icon = new OpenLayers.Icon('../resources/img/startPoint.png',size,offset);
+// 				var location = new OpenLayers.LonLat(lon,lat);
+				var location = new OpenLayers.LonLat(lon,lat).transform(new OpenLayers.Projection("EPSG:4326"), new OpenLayers.Projection("EPSG:900913"));
+// 				var size = new OpenLayers.Size(21,39);
+// 			    var offset = new OpenLayers.Pixel(-(size.w/2), -size.h);
+// 			    var icon = new OpenLayers.Icon('../resources/img/startPoint.png',size,offset);
 			    
-			    if(startMarker != null)
-			    	markers.removeMarker(startMarker);
-			    startMarker = new OpenLayers.Marker(location,icon.clone())
+// 			    if(startMarker != null)
+// 			    	markers.removeMarker(startMarker);
+// 			    startMarker = new OpenLayers.Marker(location,icon.clone())
 			    
-			    markers.addMarker(startMarker); 
+			    if(startFeature != null)
+			    	startFeature.destroy();
+			    
+			    var vectorLayerStart = new OpenLayers.Layer.Vector("Overlay");
+			    var point = new OpenLayers.Geometry.Point(lon, lat).transform( new OpenLayers.Projection("EPSG:4326"), map.getProjectionObject());
+			    startFeature = new OpenLayers.Feature.Vector(
+			    						point,
+			     						{some:'	data'},
+			     						{externalGraphic: '../resources/img/startPoint.png', graphicHeight: 39, graphicWidth: 21});
+			    vectorLayerStart.addFeatures(startFeature);
+			    map.addLayer(vectorLayerStart);
+			    
+			    dragStart = new OpenLayers.Control.DragFeature(vectorLayerStart, {
+			        autoActivate: true,
+			        onComplete: function(event) {
+//			        		alert(event.geometry.getBounds().getCenterLonLat().lat + " // " +event.geometry.getBounds().getCenterLonLat().lon);
+		        		//Chiama il servizio di reverse geocoding
+		        		var lon = event.geometry.getBounds().getCenterLonLat().lon;
+		        		var lat = event.geometry.getBounds().getCenterLonLat().lat;
+		        		var location = new OpenLayers.LonLat(lon,lat).transform(new OpenLayers.Projection("EPSG:900913"), new OpenLayers.Projection("EPSG:4326"));
+//			        		alert(location.lon + " // "+location.lat);
+		        		
+		        		formReverse.getForm().findField('lat').setValue(location.lat);
+		                formReverse.getForm().findField('lon').setValue(location.lon);
+		                formReverse.callService(lat, lon, document.location.host + ":" + document.location.port, 'reverseStart');
+			        }
+			    });
+			    map.addControl(dragStart);
+			    
+			    
+// 			    markers.addMarker(startMarker);
 			    
     			map.setCenter(location,17);
     		}
@@ -254,16 +307,47 @@
     			var lat = position.split(" ")[1];
     			
 				//Add Marker Place for startPoint
-				var location = new OpenLayers.LonLat(lon,lat);
-				var size = new OpenLayers.Size(21,39);
-			    var offset = new OpenLayers.Pixel(-(size.w/2), -size.h);
-			    var icon = new OpenLayers.Icon('../resources/img/endPoint.png',size,offset);
+// 				var location = new OpenLayers.LonLat(lon,lat);
+				var location = new OpenLayers.LonLat(lon,lat).transform(new OpenLayers.Projection("EPSG:4326"), new OpenLayers.Projection("EPSG:900913"));
+// 				var size = new OpenLayers.Size(21,39);
+// 			    var offset = new OpenLayers.Pixel(-(size.w/2), -size.h);
+// 			    var icon = new OpenLayers.Icon('../resources/img/endPoint.png',size,offset);
 			    
-			    if(endMarker != null)
-			    	markers.removeMarker(endMarker);
-			    endMarker = new OpenLayers.Marker(location,icon.clone())
+// 			    if(endMarker != null)
+// 			    	markers.removeMarker(endMarker);
+// 			    endMarker = new OpenLayers.Marker(location,icon.clone())
 			    
-			    markers.addMarker(endMarker); 
+			    
+			    if(endFeature != null)
+			    	endFeature.destroy();
+			    
+			    var vectorLayerEnd = new OpenLayers.Layer.Vector("Overlay");
+			    var point = new OpenLayers.Geometry.Point(lon, lat).transform( new OpenLayers.Projection("EPSG:4326"), map.getProjectionObject());
+			    endFeature = new OpenLayers.Feature.Vector(
+			    						point,
+			     						{some:'	data', fid: 'endF'},
+			     						{externalGraphic: '../resources/img/endPoint.png', graphicHeight: 39, graphicWidth: 21});
+			    vectorLayerEnd.addFeatures(endFeature);
+			    map.addLayer(vectorLayerEnd);
+			    
+			    dragEnd = new OpenLayers.Control.DragFeature(vectorLayerEnd, {
+			        autoActivate: true,
+			        onComplete: function(event) {
+// 			        		alert(event.geometry.getBounds().getCenterLonLat().lat + " // " +event.geometry.getBounds().getCenterLonLat().lon);
+			        		//Chiama il servizio di reverse geocoding
+			        		var lon = event.geometry.getBounds().getCenterLonLat().lon;
+			        		var lat = event.geometry.getBounds().getCenterLonLat().lat;
+			        		var location = new OpenLayers.LonLat(lon,lat).transform(new OpenLayers.Projection("EPSG:900913"), new OpenLayers.Projection("EPSG:4326"));
+// 			        		alert(location.lon + " // "+location.lat);
+			        		
+			        		formReverse.getForm().findField('lat').setValue(location.lat);
+			                formReverse.getForm().findField('lon').setValue(location.lon);
+			                formReverse.callService(lat, lon, document.location.host + ":" + document.location.port, 'reverseEnd');
+			        }
+			    });
+			    map.addControl(dragEnd);
+			    
+// 			    markers.addMarker(endMarker); 
 			    
     			map.setCenter(location,17);
     		}
