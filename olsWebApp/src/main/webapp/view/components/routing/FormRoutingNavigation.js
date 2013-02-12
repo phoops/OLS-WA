@@ -1,5 +1,7 @@
 Ext.ns('RNGEO');
 var host = document.location.host;
+var startPoint = null;
+var endPoint = null;
 RNGEO.RoutinNavigationForm = Ext.extend(Ext.form.FormPanel, {
 	id: 'routingID',
 	collapsible: true,
@@ -21,6 +23,7 @@ RNGEO.RoutinNavigationForm = Ext.extend(Ext.form.FormPanel, {
 		          {
 		        	  fieldLabel: 'Start Point',
 		        	  id: 'startPoint',
+		        	  disabled: true,
 		        	  handler: function(storeData){
 		        		  	var store = storeData.toString();
 		        		  	var values=store.split(",");
@@ -36,6 +39,7 @@ RNGEO.RoutinNavigationForm = Ext.extend(Ext.form.FormPanel, {
 		          {
 		        	  fieldLabel: 'End Point',	    	   
 		        	  id: 'endPoint',
+		        	  disabled: true,
 		        	  handler: function(storeData){
 		        		  	var store = storeData.toString();
 		        		  	var values=store.split(",");
@@ -109,8 +113,17 @@ RNGEO.RoutinNavigationForm = Ext.extend(Ext.form.FormPanel, {
 	    return true;
 	}
 	
+	,setStartPoint:function(sPoint){
+		startPoint = sPoint;
+	}
+	
+	,setEndPoint:function(ePoint){
+		endPoint = ePoint;
+	}
+	
 	//Funzione utilizzata per il ricalcolo del percorso
 	//dopo aver trascinato su mappa il punto iniziale / finale / intermedio
+	//sfrutta le informazione di endPoint e startPoint
 	,recalculateNavigation: function(){
 		//TODO: implemantazione
 	}
