@@ -17,10 +17,11 @@ RNGEO.RoutinNavigationForm = Ext.extend(Ext.form.FormPanel, {
 		        cls: 'floating-form_left',
 		        height: 180,
 		        defaults: {width: 230},
-		        defaultType: 'textfield',
+//		        defaultType: 'textfield',
 		
 		        items: [
 		          {
+		        	  xtype: 'textfield',
 		        	  fieldLabel: 'Start Point',
 		        	  id: 'startPoint',
 		        	  disabled: true,
@@ -37,6 +38,7 @@ RNGEO.RoutinNavigationForm = Ext.extend(Ext.form.FormPanel, {
                       },
 		          },
 		          {
+		        	  xtype: 'textfield',
 		        	  fieldLabel: 'End Point',	    	   
 		        	  id: 'endPoint',
 		        	  disabled: true,
@@ -51,6 +53,13 @@ RNGEO.RoutinNavigationForm = Ext.extend(Ext.form.FormPanel, {
 		        		    }
 		        		    return true;
                       }
+		          },
+		          {
+		        	  	xtype:'label',
+	                    text: "Pulsante destro del mouse sulla mappa o selezione dalla lista per definire l'inizio e la fine del viaggio.",
+	                    name: 'infoLabel',
+	                    labelStyle: 'font-weight:bold;',
+	                    anchor:'93%'	    	   
 		          }
 		        ],
 		        buttons: [

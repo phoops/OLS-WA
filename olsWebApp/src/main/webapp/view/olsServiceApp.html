@@ -59,6 +59,10 @@
 		 else return false; // For IE browsers.
 		};
 		
+		
+		//-----------------------
+		//Definizione FormREVERSE
+		//-----------------------
       	var formReverse = new RGEO.ReverseGeoroutingForm();
       	formReverse.setHost(document.location.host+ ":" + document.location.port);
     	//---------------------------------------------------------------
@@ -204,7 +208,7 @@
     		//-----------------------
     		//Form Routing Navigation
     		//-----------------------
-    		var formRN = new RNGEO.RoutinNavigationForm;
+    		var formRN = new RNGEO.RoutinNavigationForm();
     		formRN.render(document.body);
     		
     		//-----------------------
@@ -263,6 +267,9 @@
 			     						{some:'	data'},
 			     						{externalGraphic: '../resources/img/startPoint.png', graphicHeight: 39, graphicWidth: 21});
 			    vectorLayerStart.addFeatures(startFeature);
+			  	//Setting della geometria - StartPoint
+			  	var locationPoint = new OpenLayers.LonLat(location.lon,location.lat).transform(new OpenLayers.Projection("EPSG:900913"), new OpenLayers.Projection("EPSG:4326"));
+	            formRN.setStartPoint(locationPoint);
 			    map.addLayer(vectorLayerStart);
 			    
 			    dragStart = new OpenLayers.Control.DragFeature(vectorLayerStart, {
@@ -275,7 +282,9 @@
 		        		
 		        		formReverse.getForm().findField('lat').setValue(location.lat);
 		                formReverse.getForm().findField('lon').setValue(location.lon);
-		                formReverse.callService(lat, lon, document.location.host + ":" + document.location.port, 'reverseStart');
+		                formReverse.callService(location.lat, location.lon, document.location.host + ":" + document.location.port, 'reverseStart');
+		              	//Setting della geometria - StartPoint
+		                formRN.setStartPoint(location);
 			        }
 			    });
 			    map.addControl(dragStart);
@@ -304,6 +313,10 @@
 			     						{some:'	data'},
 			     						{externalGraphic: '../resources/img/endPoint.png', graphicHeight: 39, graphicWidth: 21});
 			    vectorLayerEnd.addFeatures(endFeature);
+			  	//Setting della geometria - EndPoint
+			  	var locationPoint = new OpenLayers.LonLat(location.lon,location.lat).transform(new OpenLayers.Projection("EPSG:900913"), new OpenLayers.Projection("EPSG:4326"));
+	            formRN.setEndPoint(locationPoint);
+			  	
 			    map.addLayer(vectorLayerEnd);
 			    
 			    dragEnd = new OpenLayers.Control.DragFeature(vectorLayerEnd, {
@@ -316,7 +329,9 @@
 			        		
 			        		formReverse.getForm().findField('lat').setValue(location.lat);
 			                formReverse.getForm().findField('lon').setValue(location.lon);
-			                formReverse.callService(lat, lon, document.location.host + ":" + document.location.port, 'reverseEnd');
+			                formReverse.callService(location.lat, location.lon, document.location.host + ":" + document.location.port, 'reverseEnd');
+			              	//Setting della geometria - EndPoint
+			                formRN.setEndPoint(location);
 			        }
 			    });
 			    map.addControl(dragEnd);
@@ -331,6 +346,7 @@
         * dal quale verra' calcolato il percorso tramite il servizio di routingNavigation
         */
         function addEndMarker(lon, lat){
+        	formRN = Ext.getCmp("routingID");
 			var location = new OpenLayers.LonLat(lon,lat).transform(new OpenLayers.Projection("EPSG:900913"), new OpenLayers.Projection("EPSG:4326"));
 		    
 		    if(endFeature != null)
@@ -348,6 +364,8 @@
 		    formReverse.getForm().findField('lat').setValue(lat);
             formReverse.getForm().findField('lon').setValue(lon);
             formReverse.callService(location.lat, location.lon, document.location.host + ":" + document.location.port, 'reverseEnd');
+          	//Setting della geometria - EndPoint
+            formRN.setEndPoint(location);
 		    
 		    dragEnd = new OpenLayers.Control.DragFeature(vectorLayerEnd, {
 		        autoActivate: true,
@@ -360,6 +378,8 @@
 	        		formReverse.getForm().findField('lat').setValue(location.lat);
 	                formReverse.getForm().findField('lon').setValue(location.lon);
 	                formReverse.callService(location.lat, location.lon, document.location.host + ":" + document.location.port, 'reverseEnd');
+	              	//Setting della geometria - EndPoint
+	                formRN.setEndPoint(location);
 		        }
 		    });
 		    map.addControl(dragEnd);
@@ -370,6 +390,8 @@
          * dal quale verra' calcolato il percorso tramite il servizio di routingNavigation
          */
       	function addStartMarker(lon, lat){
+      		formRN = Ext.getCmp("routingID");
+        	
 			var location = new OpenLayers.LonLat(lon,lat).transform(new OpenLayers.Projection("EPSG:900913"), new OpenLayers.Projection("EPSG:4326"));
 		    
 		    if(startFeature != null)
@@ -387,6 +409,8 @@
 		    formReverse.getForm().findField('lat').setValue(lat);
             formReverse.getForm().findField('lon').setValue(lon);
             formReverse.callService(location.lat, location.lon, document.location.host + ":" + document.location.port, 'reverseStart');
+            //Setting della geometria - StartPoint
+            formRN.setStartPoint(location);
 		    
 		    dragStart = new OpenLayers.Control.DragFeature(vectorLayerStart, {
 		        autoActivate: true,
@@ -399,6 +423,8 @@
 	        		formReverse.getForm().findField('lat').setValue(location.lat);
 	                formReverse.getForm().findField('lon').setValue(location.lon);
 	                formReverse.callService(location.lat, location.lon, document.location.host + ":" + document.location.port, 'reverseStart');
+	              	//Setting della geometria - StartPoint
+	                formRN.setStartPoint(location);
 		        }
 		    });
 		    map.addControl(dragStart);
