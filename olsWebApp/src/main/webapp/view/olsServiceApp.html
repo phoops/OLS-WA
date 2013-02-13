@@ -142,7 +142,7 @@
                       maxExtent: new OpenLayers.Bounds(-20037508.34,-20037508.34,20037508.34,20037508.34),
                       maxResolution: 156543.0399,
                       numZoomLevels: 21,
-                      units: 'm',
+//                       units: 'm',
                       projection: new OpenLayers.Projection("EPSG:900913"),
                       displayProjection: new OpenLayers.Projection("EPSG:4326")
                   } );
@@ -169,8 +169,23 @@
 // 		);
 // 		map.addLayers([ghyb, gphy, gmap, gsat]);
 
+		// OSM layers
+		var classic = new OpenLayers.Layer.OSM();	
+		var transport = new OpenLayers.Layer.OSM("Transport",
+                ["http://a.tile2.opencyclemap.org/transport/${z}/${x}/${y}.png",
+                 "http://b.tile2.opencyclemap.org/transport/${z}/${x}/${y}.png",
+                 "http://c.tile2.opencyclemap.org/transport/${z}/${x}/${y}.png"]);			
+		var cyclemap = new OpenLayers.Layer.OSM("OpenCycleMap",
+				  ["http://a.tile.opencyclemap.org/cycle/${z}/${x}/${y}.png",
+				   "http://b.tile.opencyclemap.org/cycle/${z}/${x}/${y}.png",
+				   "http://c.tile.opencyclemap.org/cycle/${z}/${x}/${y}.png"]);
+		var landscape = new OpenLayers.Layer.OSM("Landscape",
+                ["http://a.tile3.opencyclemap.org/landscape/${z}/${x}/${y}.png",
+                "http://b.tile3.opencyclemap.org/landscape/${z}/${x}/${y}.png",
+                "http://c.tile3.opencyclemap.org/landscape/${z}/${x}/${y}.png"]);
+		map.addLayers([classic, transport, cyclemap, landscape]);
 	
-		map.addLayer(new OpenLayers.Layer.OSM());
+// 		map.addLayer(new OpenLayers.Layer.OSM());
 		//-----------------
 		//End Google Layers
 		//-----------------
@@ -234,7 +249,9 @@
 				markers.clearMarkers();
 // 				var location = new OpenLayers.LonLat(lon,lat);
 				var location = new OpenLayers.LonLat(lon,lat);
+// 				alert(location.lon +" / "+location.lat);
 				location.transform(new OpenLayers.Projection("EPSG:4326"), new OpenLayers.Projection("EPSG:900913"));
+// 				alert(location.lon +" / "+location.lat);
 				
 				var size = new OpenLayers.Size(21,25);
 			    var offset = new OpenLayers.Pixel(-(size.w/2), -size.h);
