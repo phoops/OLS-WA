@@ -110,6 +110,10 @@ GEO.GeoroutingForm = Ext.extend(Ext.form.FormPanel, {
 			            			    	
 			            			    	xml = xmlhttp.responseXML;
 			            			    	var streetDataArray = toArrayData(xml);
+			            			    	if(streetDataArray.length == 0){
+			            			    		Ext.MessageBox.alert('Error', 'Street not found!');
+			            			    		break;
+			            			    	}
 			            			    	Ext.getCmp('streesList').handler(streetDataArray);
 			            			    	
 			            			        break;
