@@ -22,6 +22,33 @@ GEO.GeoroutingForm = Ext.extend(Ext.form.FormPanel, {
 		
 		        items: [
 		          {
+		        	  xtype: 'combo',
+		        	  store: new Ext.data.ArrayStore({
+		        	        id: 0,
+		        	        fields: [
+		        	            'abbr',
+		        	            'prov'
+		        	        ],
+		        	        data: [ ['AR', 'Arezzo - AR'],
+		        	                ['FI', 'Firenze - FI'],
+		        	                ['GR', 'Grosseto - GR'],
+		        	                ['LI', 'Livorno - LI'],
+		        	                ['LU', 'Lucca - LU'],
+		        	                ['MS', 'Massa-Carrara - MS'],
+		        	                ['PI', 'Pisa - PI'],
+		        	                ['PT', 'Pistoia - PT'],
+		        	                ['PO', 'Prato - PO'],
+		        	                ['SI', 'Siena - SI']
+		        	        	 ]
+		        	    }),
+		        	  valueField: 'abbr',
+			          displayField: 'prov',
+			          typeAhead: true,
+			          mode: 'local',
+			          forceSelection: true,
+			          triggerAction: 'all',
+			          emptyText:'Seleziona una Provincia...',
+			          selectOnFocus:true,
 		        	  fieldLabel: 'Provincia',
 		        	  id: 'provincia'
 //		        		  ,
