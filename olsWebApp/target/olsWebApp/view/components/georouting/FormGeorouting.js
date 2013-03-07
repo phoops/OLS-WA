@@ -103,6 +103,7 @@ GEO.GeoroutingForm = Ext.extend(Ext.form.FormPanel, {
 			            			    	
 			            			    	xml = xmlhttp.responseXML;
 			            			    	var streetsData  = toJSON(xml);
+			            			    	alert("PIPPO");
 			            			    	Ext.getCmp('streesList').handler(streetsData);
 			            			    	
 			            			        break;
