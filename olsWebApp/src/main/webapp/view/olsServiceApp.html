@@ -49,6 +49,8 @@
       	var endFeature = null;
       	var startFeature = null;
       	var vectorLayer = new OpenLayers.Layer.Vector("Overlay");
+      	var routeLayer = new OpenLayers.Layer.Vector("Route");
+      	var routeVisible = false;
       	
       	//--------------------------------------
       	// Get control of the right-click event:
@@ -454,27 +456,44 @@
       	
 		function handlerRoutePoint(event){
 			var routeMLS = event.routeList;
-			alert(routeMLS);
-			//Creazione del layer Vector per la route
-			var redRoute = new OpenLayers.Layer.Vector(" Route ");
-			parser = new OpenLayers.Format.WKT(); 
-			var wkt = routeMLS;
-			var geometry = parser.read(wkt); 
-			var features = new OpenLayers.Feature.Vector(geometry);
-
-// 			var vectorLayer = new OpenLayers.Layer.Vector("Overlay");
-// 			var feature = new OpenLayers.Feature.Vector(
-// 			 new OpenLayers.Geometry.Point(43.776790000000005 11.296500000000002),
-// 			 {some:'data'},
-// 			 {externalGraphic: 'img/marker.png', graphicHeight: 21, graphicWidth: 16});
-// 			vectorLayer.addFeatures(feature);
-// 			map.addLayer(vectorLayer);
+			var points = routeMLS.split(",");
 			
+			//Controllo se è gia presente un altro persorso
+			if(routeVisible){
+				routeLayer.removeAllFeatures();
+				map.removeLayer(routeLayer);  
+				routeVisible = false;
+			}else{			
+				routeLayer = new OpenLayers.Layer.Vector("Route");
+			}
+			map.addLayer(routeLayer);  
+			routeVisible = true;
 			
-			map.setLayerIndex(features, 2);
-
-			redRoute.addFeatures(features); 
-			map.addLayer(redRoute);
+			//Crea un array di Points
+			arrayPoints = new Array();
+			for(var i=0; i<points.length; i++){
+				var y = points[i].split(" ")[0];
+				var x = points[i].split(" ")[1];
+				pointGeo = new OpenLayers.Geometry.Point(x,y).transform(new OpenLayers.Projection("EPSG:4326"), new OpenLayers.Projection("EPSG:900913"));
+				arrayPoints.push(pointGeo);
+			}
+			
+// 			alert("Dimensione arrayPoints: "+arrayPoints.length);
+			
+			//Creazione della LineString
+			var lineGeo = new OpenLayers.Geometry.LineString(arrayPoints);
+// 			alert(lineGeo);
+			
+			var style = { 
+					  strokeColor: '#0000ff', 
+					  strokeOpacity: 0.5,
+					  strokeWidth: 5
+					};
+			
+			var lineFeature = new OpenLayers.Feature.Vector(lineGeo, null, style);
+			routeLayer.addFeatures([lineFeature]);
+			
+			map.setLayerIndex(routeLayer, 2);
 		}
         
       </script>

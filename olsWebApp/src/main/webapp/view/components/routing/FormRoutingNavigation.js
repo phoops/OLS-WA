@@ -121,11 +121,11 @@ RNGEO.RoutinNavigationForm = Ext.extend(Ext.form.FormPanel, {
 		            			    case 200: // Do the Do
 		            			    	
 		            			    	xml = xmlhttp.responseXML;
-		            			    	alert(xmlhttp.responseText);
+//		            			    	alert(xmlhttp.responseText);
 //		            			    	var streetDataArray = toArrayData(xml);
 //		            			    	Ext.getCmp('streesList').handler(streetDataArray);
-		            			    	//TODO: creazione della MULTILINESTRING
 		            			    	createMultiLineString(xml);
+		            			    	//TODO: Creazione delle DESCRIZIONE (DIRECTIONS)
 		            			    	
 		            			    	
 		            			        break;
@@ -195,8 +195,7 @@ Ext.reg('routinnavigationform', RNGEO.RoutinNavigationForm);
 
 function createMultiLineString(xml){
 	nodeAddress = xml.getElementsByTagNameNS(namespace2, "pos");
-	var routePoint = "MULTILINESTRING((";
-	alert(nodeAddress.length);
+	var routePoint = "";
 	//Inizio a ciclare da i=2 -> perche' i primi due sono quelli associati al BoundingBox
 	for(var i=2; i<nodeAddress.length; i++){
 		var item = nodeAddress.item(i);
@@ -206,7 +205,7 @@ function createMultiLineString(xml){
 			routePoint += item.firstChild.nodeValue+",";
 		}
 	}
-	routePoint = routePoint + "), EPSG:4326)";
+	routePoint = routePoint + "";
 	//Creo l'evento per il passaggio delle lista dei Points da disegnare su mappa tramite OpenLayers
 	var evt = document.createEvent("Event");
     evt.initEvent("routePointEvent",true,true);
