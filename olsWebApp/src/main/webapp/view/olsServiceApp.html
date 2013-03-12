@@ -447,6 +447,36 @@
 		    map.addControl(dragStart);
       	}
         
+      	//-------------------------------
+		//Dispacher dell'evento RouteList
+		//-------------------------------
+		document.addEventListener("routePointEvent",handlerRoutePoint,false);
+      	
+		function handlerRoutePoint(event){
+			var routeMLS = event.routeList;
+			alert(routeMLS);
+			//Creazione del layer Vector per la route
+			var redRoute = new OpenLayers.Layer.Vector(" Route ");
+			parser = new OpenLayers.Format.WKT(); 
+			var wkt = routeMLS;
+			var geometry = parser.read(wkt); 
+			var features = new OpenLayers.Feature.Vector(geometry);
+
+// 			var vectorLayer = new OpenLayers.Layer.Vector("Overlay");
+// 			var feature = new OpenLayers.Feature.Vector(
+// 			 new OpenLayers.Geometry.Point(43.776790000000005 11.296500000000002),
+// 			 {some:'data'},
+// 			 {externalGraphic: 'img/marker.png', graphicHeight: 21, graphicWidth: 16});
+// 			vectorLayer.addFeatures(feature);
+// 			map.addLayer(vectorLayer);
+			
+			
+			map.setLayerIndex(features, 2);
+
+			redRoute.addFeatures(features); 
+			map.addLayer(redRoute);
+		}
+        
       </script>
 </body>
 </html>

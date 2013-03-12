@@ -2,6 +2,8 @@ Ext.ns('RNGEO');
 var host = document.location.host;
 var startPoint = null;
 var endPoint = null;
+var namespace = 'http://www.opengis.net/xls';
+var namespace2 = 'http://www.opengis.net/gml';
 RNGEO.RoutinNavigationForm = Ext.extend(Ext.form.FormPanel, {
 	id: 'routingID',
 	collapsible: true,
@@ -108,9 +110,6 @@ RNGEO.RoutinNavigationForm = Ext.extend(Ext.form.FormPanel, {
 		            					+"	</RouteMapRequest>"
 		            					+"</DetermineRouteRequest>";
 		            		
-		            		
-		            		alert(xml);
-		            		
 		            		//Handler POST request
 		            		xmlhttp.open("POST", url);
 		            		
@@ -125,6 +124,9 @@ RNGEO.RoutinNavigationForm = Ext.extend(Ext.form.FormPanel, {
 		            			    	alert(xmlhttp.responseText);
 //		            			    	var streetDataArray = toArrayData(xml);
 //		            			    	Ext.getCmp('streesList').handler(streetDataArray);
+		            			    	//TODO: creazione della MULTILINESTRING
+		            			    	createMultiLineString(xml);
+		            			    	
 		            			    	
 		            			        break;
 		            			    case 404: // Error: 404 - Resource not found!
@@ -190,3 +192,30 @@ RNGEO.RoutinNavigationForm = Ext.extend(Ext.form.FormPanel, {
 	}
 });
 Ext.reg('routinnavigationform', RNGEO.RoutinNavigationForm);
+
+function createMultiLineString(xml){
+	nodeAddress = xml.getElementsByTagNameNS(namespace2, "pos");
+	var routePoint = "MULTILINESTRING((";
+	alert(nodeAddress.length);
+	//Inizio a ciclare da i=2 -> perche' i primi due sono quelli associati al BoundingBox
+	for(var i=2; i<nodeAddress.length; i++){
+		var item = nodeAddress.item(i);
+		if(i == nodeAddress.length-1){
+			routePoint += item.firstChild.nodeValue;
+		}else{
+			routePoint += item.firstChild.nodeValue+",";
+		}
+	}
+	routePoint = routePoint + "), EPSG:4326)";
+	//Creo l'evento per il passaggio delle lista dei Points da disegnare su mappa tramite OpenLayers
+	var evt = document.createEvent("Event");
+    evt.initEvent("routePointEvent",true,true);
+    evt.routeList = routePoint;
+    document.dispatchEvent(evt);
+	
+	return routePoint;
+}
+
+function createDescDirection(xml){
+	
+}
