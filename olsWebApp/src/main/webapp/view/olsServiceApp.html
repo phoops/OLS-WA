@@ -50,7 +50,11 @@
       	var startFeature = null;
       	var vectorLayer = new OpenLayers.Layer.Vector("Overlay");
       	var routeLayer = new OpenLayers.Layer.Vector("Route");
+      	var vertorHandlerPoint = new OpenLayers.Layer.Vector("Handler Point");
+      	var startVisible = false;
+      	var endVisible = false;
       	var routeVisible = false;
+      	var hpVisible = false;
       	
       	//--------------------------------------
       	// Get control of the right-click event:
@@ -186,6 +190,7 @@
                 "http://b.tile3.opencyclemap.org/landscape/${z}/${x}/${y}.png",
                 "http://c.tile3.opencyclemap.org/landscape/${z}/${x}/${y}.png"]);
 		map.addLayers([classic, transport, cyclemap, landscape]);
+		map.addLayer(vertorHandlerPoint);
 	
 // 		map.addLayer(new OpenLayers.Layer.OSM());
 		//-----------------
@@ -279,34 +284,27 @@
 			    if(startFeature != null)
 			    	startFeature.destroy();
 			    
-			    var vectorLayerStart = new OpenLayers.Layer.Vector("Overlay");
+			    if(startVisible){
+					vertorHandlerPoint.removeFeatures(vertorHandlerPoint.getFeatureByFid('startPoint'));
+					startVisible = false;
+			    }
+			    
 			    var point = new OpenLayers.Geometry.Point(lon, lat).transform( new OpenLayers.Projection("EPSG:4326"), map.getProjectionObject());
+			 	// create some attributes for the feature
+			    var attributes = {name: "startPoint"};
 			    startFeature = new OpenLayers.Feature.Vector(
-			    						point,
-			     						{some:'	data'},
-			     						{externalGraphic: '../resources/img/startPoint.png', graphicHeight: 39, graphicWidth: 21});
-			    vectorLayerStart.addFeatures(startFeature);
+			    						point, attributes,
+			     						{externalGraphic: '../resources/img/startPoint.png', graphicHeight: 39, graphicWidth: 21}
+			     						);
+				vertorHandlerPoint.addFeatures(startFeature);
+			    startFeature.fid = 'startPoint';
 			  	//Setting della geometria - StartPoint
 			  	var locationPoint = new OpenLayers.LonLat(location.lon,location.lat).transform(new OpenLayers.Projection("EPSG:900913"), new OpenLayers.Projection("EPSG:4326"));
 	            formRN.setStartPoint(locationPoint);
-			    map.addLayer(vectorLayerStart);
 			    
-			    dragStart = new OpenLayers.Control.DragFeature(vectorLayerStart, {
-			        autoActivate: true,
-			        onComplete: function(event) {
-		        		//Chiama il servizio di reverse geocoding
-		        		var lon = event.geometry.getBounds().getCenterLonLat().lon;
-		        		var lat = event.geometry.getBounds().getCenterLonLat().lat;
-		        		var location = new OpenLayers.LonLat(lon,lat).transform(new OpenLayers.Projection("EPSG:900913"), new OpenLayers.Projection("EPSG:4326"));
-		        		
-		        		formReverse.getForm().findField('lat').setValue(location.lat);
-		                formReverse.getForm().findField('lon').setValue(location.lon);
-		                formReverse.callService(location.lat, location.lon, document.location.host + ":" + document.location.port, 'reverseStart');
-		              	//Setting della geometria - StartPoint
-		                formRN.setStartPoint(location);
-			        }
-			    });
-			    map.addControl(dragStart);
+			    startVisible = true;
+			    
+			    handlerStartEndControl(vertorHandlerPoint, event);
     			map.setCenter(location,17);
     		}
     		
@@ -325,36 +323,25 @@
 			    if(endFeature != null)
 			    	endFeature.destroy();
 			    
-			    var vectorLayerEnd = new OpenLayers.Layer.Vector("Overlay");
+			    if(endVisible){
+			    	vertorHandlerPoint.removeFeatures(vertorHandlerPoint.getFeatureByFid('endPoint'));
+					endVisible = false;
+			    }
+			    
 			    var point = new OpenLayers.Geometry.Point(lon, lat).transform( new OpenLayers.Projection("EPSG:4326"), map.getProjectionObject());
+			    var attributes = {name: "endPoint"};
 			    endFeature = new OpenLayers.Feature.Vector(
-			    						point,
-			     						{some:'	data'},
+			    						point, attributes,
 			     						{externalGraphic: '../resources/img/endPoint.png', graphicHeight: 39, graphicWidth: 21});
-			    vectorLayerEnd.addFeatures(endFeature);
+			    endFeature.fid = 'endPoint';
+			    vertorHandlerPoint.addFeatures(endFeature);
 			  	//Setting della geometria - EndPoint
 			  	var locationPoint = new OpenLayers.LonLat(location.lon,location.lat).transform(new OpenLayers.Projection("EPSG:900913"), new OpenLayers.Projection("EPSG:4326"));
 	            formRN.setEndPoint(locationPoint);
 			  	
-			    map.addLayer(vectorLayerEnd);
+			    endVisible = true;
 			    
-			    dragEnd = new OpenLayers.Control.DragFeature(vectorLayerEnd, {
-			        autoActivate: true,
-			        onComplete: function(event) {
-			        		//Chiama il servizio di reverse geocoding
-			        		var lon = event.geometry.getBounds().getCenterLonLat().lon;
-			        		var lat = event.geometry.getBounds().getCenterLonLat().lat;
-			        		var location = new OpenLayers.LonLat(lon,lat).transform(new OpenLayers.Projection("EPSG:900913"), new OpenLayers.Projection("EPSG:4326"));
-			        		
-			        		formReverse.getForm().findField('lat').setValue(location.lat);
-			                formReverse.getForm().findField('lon').setValue(location.lon);
-			                formReverse.callService(location.lat, location.lon, document.location.host + ":" + document.location.port, 'reverseEnd');
-			              	//Setting della geometria - EndPoint
-			                formRN.setEndPoint(location);
-			        }
-			    });
-			    map.addControl(dragEnd);
-			    
+			    handlerStartEndControl(vertorHandlerPoint, event);
     			map.setCenter(location,17);
     		}
     		
@@ -371,37 +358,27 @@
 		    if(endFeature != null)
 		    	endFeature.destroy();
 		    
-		    var vectorLayerEnd = new OpenLayers.Layer.Vector("Overlay");
+		    if(endVisible){
+		    	vertorHandlerPoint.removeFeatures(vertorHandlerPoint.getFeatureByFid('endPoint'));
+				endVisible = false;
+		    }
+		    
 		    var point = new OpenLayers.Geometry.Point(lon, lat).transform( new OpenLayers.Projection("EPSG:900913"), map.getProjectionObject());
+		    var attributes = {name: "endPoint"};
 		    endFeature = new OpenLayers.Feature.Vector(
-		    						point,
-		     						{some:'	data'},
+		    						point, attributes,
 		     						{externalGraphic: '../resources/img/endPoint.png', graphicHeight: 39, graphicWidth: 21});
-		    vectorLayerEnd.addFeatures(endFeature);
-		    map.addLayer(vectorLayerEnd);
+		    endFeature.fid = 'endPoint';
+		    vertorHandlerPoint.addFeatures(endFeature);
 		    
 		    formReverse.getForm().findField('lat').setValue(lat);
             formReverse.getForm().findField('lon').setValue(lon);
             formReverse.callService(location.lat, location.lon, document.location.host + ":" + document.location.port, 'reverseEnd');
           	//Setting della geometria - EndPoint
             formRN.setEndPoint(location);
-		    
-		    dragEnd = new OpenLayers.Control.DragFeature(vectorLayerEnd, {
-		        autoActivate: true,
-		        onComplete: function(event) {
-	        		//Chiama il servizio di reverse geocoding
-	        		var lon = event.geometry.getBounds().getCenterLonLat().lon;
-	        		var lat = event.geometry.getBounds().getCenterLonLat().lat;
-	        		var location = new OpenLayers.LonLat(lon,lat).transform(new OpenLayers.Projection("EPSG:900913"), new OpenLayers.Projection("EPSG:4326"));
-	        		
-	        		formReverse.getForm().findField('lat').setValue(location.lat);
-	                formReverse.getForm().findField('lon').setValue(location.lon);
-	                formReverse.callService(location.lat, location.lon, document.location.host + ":" + document.location.port, 'reverseEnd');
-	              	//Setting della geometria - EndPoint
-	                formRN.setEndPoint(location);
-		        }
-		    });
-		    map.addControl(dragEnd);
+          	
+            endVisible = true;
+		    handlerStartEndControl(vertorHandlerPoint, event);
       	}
       	
         /**
@@ -416,14 +393,19 @@
 		    if(startFeature != null)
 		    	startFeature.destroy();
 		    
-		    var vectorLayerStart = new OpenLayers.Layer.Vector("Overlay");
+		    if(startVisible){
+				vertorHandlerPoint.removeFeatures(vertorHandlerPoint.getFeatureByFid('startPoint'));
+				startVisible = false;
+		    }
+		    
 		    var point = new OpenLayers.Geometry.Point(lon, lat).transform( new OpenLayers.Projection("EPSG:900913"), map.getProjectionObject());
 		    startFeature = new OpenLayers.Feature.Vector(
-		    						point,
-		     						{some:'	data'},
-		     						{externalGraphic: '../resources/img/startPoint.png', graphicHeight: 39, graphicWidth: 21});
-		    vectorLayerStart.addFeatures(startFeature);
-		    map.addLayer(vectorLayerStart);
+					point, attributes,
+						{externalGraphic: '../resources/img/startPoint.png', graphicHeight: 39, graphicWidth: 21}
+						);
+			vertorHandlerPoint.addFeatures(startFeature);
+			startFeature.fid = 'startPoint';
+		    vertorHandlerPoint.addFeatures(startFeature);
 		    
 		    formReverse.getForm().findField('lat').setValue(lat);
             formReverse.getForm().findField('lon').setValue(lon);
@@ -431,22 +413,8 @@
             //Setting della geometria - StartPoint
             formRN.setStartPoint(location);
 		    
-		    dragStart = new OpenLayers.Control.DragFeature(vectorLayerStart, {
-		        autoActivate: true,
-		        onComplete: function(event) {
-	        		//Chiama il servizio di reverse geocoding
-	        		var lon = event.geometry.getBounds().getCenterLonLat().lon;
-	        		var lat = event.geometry.getBounds().getCenterLonLat().lat;
-	        		var location = new OpenLayers.LonLat(lon,lat).transform(new OpenLayers.Projection("EPSG:900913"), new OpenLayers.Projection("EPSG:4326"));
-	        		
-	        		formReverse.getForm().findField('lat').setValue(location.lat);
-	                formReverse.getForm().findField('lon').setValue(location.lon);
-	                formReverse.callService(location.lat, location.lon, document.location.host + ":" + document.location.port, 'reverseStart');
-	              	//Setting della geometria - StartPoint
-	                formRN.setStartPoint(location);
-		        }
-		    });
-		    map.addControl(dragStart);
+            startVisible = true;
+		    handlerStartEndControl(vertorHandlerPoint, event);
       	}
         
       	//-------------------------------
@@ -478,12 +446,8 @@
 				arrayPoints.push(pointGeo);
 			}
 			
-// 			alert("Dimensione arrayPoints: "+arrayPoints.length);
-			
 			//Creazione della LineString
 			var lineGeo = new OpenLayers.Geometry.LineString(arrayPoints);
-// 			alert(lineGeo);
-			
 			var style = { 
 					  strokeColor: '#0000ff', 
 					  strokeOpacity: 0.5,
@@ -494,6 +458,39 @@
 			routeLayer.addFeatures([lineFeature]);
 			
 			map.setLayerIndex(routeLayer, 2);
+		}
+		
+		function handlerStartEndControl(hpVector, feature){
+			formRN = Ext.getCmp("routingID");
+			var controls = new Array();
+			var lonInit = null;
+			var latInit = null;
+			var pointInit = null;
+			var pointStart = null;
+								
+				 drag = new OpenLayers.Control.DragFeature(hpVector, {
+			        autoActivate: true,
+			        onComplete: function(feature) {
+		        		//Chiama il servizio di reverse geocoding
+		        		var lon = feature.geometry.getBounds().getCenterLonLat().lon;
+		        		var lat = feature.geometry.getBounds().getCenterLonLat().lat;
+		        		var location = new OpenLayers.LonLat(lon,lat).transform(new OpenLayers.Projection("EPSG:900913"), new OpenLayers.Projection("EPSG:4326"));
+		        		
+		        		formReverse.getForm().findField('lat').setValue(location.lat);
+		                formReverse.getForm().findField('lon').setValue(location.lon);
+		                
+						if(feature.fid.toString() == "startPoint"){
+							formReverse.callService(location.lat, location.lon, document.location.host + ":" + document.location.port, 'reverseStart');
+		                	formRN.setStartPoint(location);
+						}
+						if(feature.fid.toString() == "endPoint"){
+							formReverse.callService(location.lat, location.lon, document.location.host + ":" + document.location.port, 'reverseEnd');
+							formRN.setEndPoint(location);
+						}
+			        }
+			    });
+			 	controls.push(drag);
+				map.addControls(controls);
 		}
         
       </script>
