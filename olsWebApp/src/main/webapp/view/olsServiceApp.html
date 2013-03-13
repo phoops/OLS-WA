@@ -55,7 +55,7 @@
       	var endVisible = false;
       	var routeVisible = false;
       	var hpVisible = false;
-      	
+      	var popup = null;
       	//--------------------------------------
       	// Get control of the right-click event:
 		//--------------------------------------
@@ -119,18 +119,33 @@
               triggerRight: function(e) {
             	  var lonlat = map.getLonLatFromPixel(e.xy);
             	  
-            	  popup = new OpenLayers.Popup.FramedCloud("featurePopup",
-                          lonlat,
-                          new OpenLayers.Size(100,100),
-                          "<h2> Navigation </h2>" 
-//                           +"Longitudine: "+lonlat.lon+ "<br> Latidutine: "+lonlat.lat
-							+"<br><br><button href='#' onclick='addStartMarker("+lonlat.lon+","+lonlat.lat+");'>"
-                          	+"<IMG SRC='../resources/img/ini.png' ALIGN='absmiddle'> Start from here</button>"+
-                          	"<button href='#' onclick='addEndMarker("+lonlat.lon+","+lonlat.lat+");'>"
-                          	+"<IMG SRC='../resources/img/fin.png' ALIGN='absmiddle'> End to here</button>",
-                          null, true);
-
-       			  map.addPopup(popup);
+            	  if(popup == null){
+	            	  popup = new OpenLayers.Popup.FramedCloud("featurePopup",
+	                          lonlat,
+	                          new OpenLayers.Size(100,100),
+	                          "<h2> Navigation </h2>" 
+	//                           +"Longitudine: "+lonlat.lon+ "<br> Latidutine: "+lonlat.lat
+								+"<br><br><button href='#' onclick='addStartMarker("+lonlat.lon+","+lonlat.lat+");'>"
+	                          	+"<IMG SRC='../resources/img/ini.png' ALIGN='absmiddle'> Start from here</button>"+
+	                          	"<button href='#' onclick='addEndMarker("+lonlat.lon+","+lonlat.lat+");'>"
+	                          	+"<IMG SRC='../resources/img/fin.png' ALIGN='absmiddle'> End to here</button>",
+	                          null, true);
+	
+	       			  map.addPopup(popup);
+            	  }else{
+            		  popup.destroy();
+            		  popup = new OpenLayers.Popup.FramedCloud("featurePopup",
+	                          lonlat,
+	                          new OpenLayers.Size(100,100),
+	                          "<h2> Navigation </h2>" 
+	//                           +"Longitudine: "+lonlat.lon+ "<br> Latidutine: "+lonlat.lat
+								+"<br><br><button href='#' onclick='addStartMarker("+lonlat.lon+","+lonlat.lat+");'>"
+	                          	+"<IMG SRC='../resources/img/ini.png' ALIGN='absmiddle'> Start from here</button>"+
+	                          	"<button href='#' onclick='addEndMarker("+lonlat.lon+","+lonlat.lat+");'>"
+	                          	+"<IMG SRC='../resources/img/fin.png' ALIGN='absmiddle'> End to here</button>",
+	                          null, true);
+            		  map.addPopup(popup);
+            	  }
               }
               
 
@@ -352,6 +367,7 @@
         * dal quale verra' calcolato il percorso tramite il servizio di routingNavigation
         */
         function addEndMarker(lon, lat){
+        	popup.hide();
         	formRN = Ext.getCmp("routingID");
 			var location = new OpenLayers.LonLat(lon,lat).transform(new OpenLayers.Projection("EPSG:900913"), new OpenLayers.Projection("EPSG:4326"));
 		    
@@ -376,6 +392,8 @@
             formReverse.callService(location.lat, location.lon, document.location.host + ":" + document.location.port, 'reverseEnd');
           	//Setting della geometria - EndPoint
             formRN.setEndPoint(location);
+          	//Ricalcolo del percorso
+            formRN.recalculateNavigation();
           	
             endVisible = true;
 		    handlerStartEndControl(vertorHandlerPoint, event);
@@ -386,8 +404,8 @@
          * dal quale verra' calcolato il percorso tramite il servizio di routingNavigation
          */
       	function addStartMarker(lon, lat){
+        	popup.hide();
       		formRN = Ext.getCmp("routingID");
-        	
 			var location = new OpenLayers.LonLat(lon,lat).transform(new OpenLayers.Projection("EPSG:900913"), new OpenLayers.Projection("EPSG:4326"));
 		    
 		    if(startFeature != null)
@@ -399,11 +417,12 @@
 		    }
 		    
 		    var point = new OpenLayers.Geometry.Point(lon, lat).transform( new OpenLayers.Projection("EPSG:900913"), map.getProjectionObject());
+		    var attributes = {name: "startPoint"};
 		    startFeature = new OpenLayers.Feature.Vector(
 					point, attributes,
 						{externalGraphic: '../resources/img/startPoint.png', graphicHeight: 39, graphicWidth: 21}
 						);
-			vertorHandlerPoint.addFeatures(startFeature);
+// 			vertorHandlerPoint.addFeatures(startFeature);
 			startFeature.fid = 'startPoint';
 		    vertorHandlerPoint.addFeatures(startFeature);
 		    
@@ -412,6 +431,11 @@
             formReverse.callService(location.lat, location.lon, document.location.host + ":" + document.location.port, 'reverseStart');
             //Setting della geometria - StartPoint
             formRN.setStartPoint(location);
+            //Ricalcolo del percorso
+            formRN.recalculateNavigation();
+            
+//             map.removePopup(popup);
+
 		    
             startVisible = true;
 		    handlerStartEndControl(vertorHandlerPoint, event);
@@ -482,10 +506,12 @@
 						if(feature.fid.toString() == "startPoint"){
 							formReverse.callService(location.lat, location.lon, document.location.host + ":" + document.location.port, 'reverseStart');
 		                	formRN.setStartPoint(location);
+		                	formRN.recalculateNavigation();
 						}
 						if(feature.fid.toString() == "endPoint"){
 							formReverse.callService(location.lat, location.lon, document.location.host + ":" + document.location.port, 'reverseEnd');
 							formRN.setEndPoint(location);
+							formRN.recalculateNavigation();
 						}
 			        }
 			    });

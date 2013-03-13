@@ -57,6 +57,36 @@ RNGEO.RoutinNavigationForm = Ext.extend(Ext.form.FormPanel, {
                       }
 		          },
 		          {
+		        	  xtype: 'combo',
+		        	  store: new Ext.data.ArrayStore({
+		        	        id: 0,
+		        	        fields: [
+		        	            'met',
+		        	        ],
+		        	        data: [ ['Fastest'],
+		        	                ['Shortest'],
+		        	                ['Pedestrian']
+		        	        	 ]
+		        	    }),
+			          displayField: 'met',
+			          typeAhead: true,
+			          mode: 'local',
+			          forceSelection: true,
+			          triggerAction: 'all',
+			          value: 'Fastest',
+//			          emptyText:'Seleziona un Metodo...',
+			          selectOnFocus:true,
+		        	  fieldLabel: 'Method',
+		        	  id: 'method'
+//		        		  ,
+//		        	  validator: function(v) {
+//		        		  if (v === "" || v == null || v.lenght == 0) {
+//		        		        return "Value is incorrect";
+//		        		    }
+//		        		    return true;
+//                      }
+		          },
+		          {
 		        	  	xtype:'label',
 	                    text: "Pulsante destro del mouse sulla mappa o selezione dalla lista per definire l'inizio e la fine del viaggio.",
 	                    name: 'infoLabel',
@@ -70,77 +100,78 @@ RNGEO.RoutinNavigationForm = Ext.extend(Ext.form.FormPanel, {
 		            	text: 'Submit',
 		            	handler: function(toponimo){
 		            		var xmlhttp = null;
+		            		var methodSearch = Ext.getCmp('method').getValue();
 		            		
-		            		if (window.XMLHttpRequest){
-		            			// code for IE7+, Firefox, Chrome, Opera, Safari
-		            			xmlhttp = new XMLHttpRequest();
-		            		}else{
-		            			// code for IE6, IE5
-		            			xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
-		            		}
+		            		if(methodSearch != ""){
 		            		
-		            		var startValue = Ext.getCmp('startPoint').getValue();
-		            		var endValue = Ext.getCmp('endPoint').getValue();
-		            		
-		            		var url = "http://"+host+"/geoserver/ols";
-		            		var xml = "<?xml version='1.0' encoding='UTF-8'?>"
-		            					+"<DetermineRouteRequest xmlns='http://www.opengis.net/xls' xmlns:gml='http://www.opengis.net/gml'>"
-		            					+"	<RoutePlan>"
-		            					+"		<RoutePreference>Fastest</RoutePreference>"	
-		            					+"		<WayPointList>"
-		            					+"			<StartPoint>"
-		            					+"				<Position>"
-		            					+"					<gml:Point>"
-		            					+"						<gml:pos>"+startPoint.lat +" "+ startPoint.lon+"</gml:pos>"
-		            					+"					</gml:Point>"
-		            					+"				</Position>"
-		            					+"			</StartPoint>"
-		            					+"			<EndPoint>"
-		            					+"				<Position>"
-		            					+"					<gml:Point>"
-		            					+"						<gml:pos>"+endPoint.lat +" "+ endPoint.lon+"</gml:pos>"
-		            					+"					</gml:Point>"
-		            					+"				</Position>"
-		            					+"			</EndPoint>"
-		            					+"		</WayPointList>"
-		            					+"	</RoutePlan>"
-		            					+"	<RouteInstructionsRequest format='text/plain' provideGeometry='false'/>"
-		            					+"	<RouteMapRequest>"
-		            					+"		<Output format='png8' height='400' width='400'/>"
-		            					+"	</RouteMapRequest>"
-		            					+"</DetermineRouteRequest>";
-		            		
-		            		//Handler POST request
-		            		xmlhttp.open("POST", url);
-		            		
-		            		xmlhttp.onreadystatechange = function() {
-		            			if (xmlhttp.readyState==4)
-		            			{
-		            			    switch (xmlhttp.status)
-		            			    {
-		            			    case 200: // Do the Do
-		            			    	
-		            			    	xml = xmlhttp.responseXML;
-//		            			    	alert(xmlhttp.responseText);
-//		            			    	var streetDataArray = toArrayData(xml);
-//		            			    	Ext.getCmp('streesList').handler(streetDataArray);
-		            			    	createMultiLineString(xml);
-		            			    	//TODO: Creazione delle DESCRIZIONE (DIRECTIONS)
-		            			    	
-		            			    	
-		            			        break;
-		            			    case 404: // Error: 404 - Resource not found!
-		            			    	alert("Error 404 Service Not Found!");
-		            			        break;
-		            			    case 500:
-		            			    	alert("Error 500 " + xmlhttp.responseText);
-		            			    	break;
-		            			    default:  // Error: Unknown!
-		            			    }
-		            			}    
-		            	    };
-		            	    
-		            	    xmlhttp.send(xml);
+			            		if (window.XMLHttpRequest){
+			            			// code for IE7+, Firefox, Chrome, Opera, Safari
+			            			xmlhttp = new XMLHttpRequest();
+			            		}else{
+			            			// code for IE6, IE5
+			            			xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+			            		}
+			            		
+			            		var startValue = Ext.getCmp('startPoint').getValue();
+			            		var endValue = Ext.getCmp('endPoint').getValue();
+			            		
+			            		var url = "http://"+host+"/geoserver/ols";
+			            		var xml = "<?xml version='1.0' encoding='UTF-8'?>"
+			            					+"<DetermineRouteRequest xmlns='http://www.opengis.net/xls' xmlns:gml='http://www.opengis.net/gml'>"
+			            					+"	<RoutePlan>"
+			            					+"		<RoutePreference>"+methodSearch+"</RoutePreference>"	
+			            					+"		<WayPointList>"
+			            					+"			<StartPoint>"
+			            					+"				<Position>"
+			            					+"					<gml:Point>"
+			            					+"						<gml:pos>"+startPoint.lat +" "+ startPoint.lon+"</gml:pos>"
+			            					+"					</gml:Point>"
+			            					+"				</Position>"
+			            					+"			</StartPoint>"
+			            					+"			<EndPoint>"
+			            					+"				<Position>"
+			            					+"					<gml:Point>"
+			            					+"						<gml:pos>"+endPoint.lat +" "+ endPoint.lon+"</gml:pos>"
+			            					+"					</gml:Point>"
+			            					+"				</Position>"
+			            					+"			</EndPoint>"
+			            					+"		</WayPointList>"
+			            					+"	</RoutePlan>"
+			            					+"	<RouteInstructionsRequest format='text/plain' provideGeometry='false'/>"
+			            					+"	<RouteMapRequest>"
+			            					+"		<Output format='png8' height='400' width='400'/>"
+			            					+"	</RouteMapRequest>"
+			            					+"</DetermineRouteRequest>";
+			            		
+			            		//Handler POST request
+			            		xmlhttp.open("POST", url);
+			            		
+			            		xmlhttp.onreadystatechange = function() {
+			            			if (xmlhttp.readyState==4)
+			            			{
+			            			    switch (xmlhttp.status)
+			            			    {
+			            			    case 200: // Do the Do
+			            			    	
+			            			    	xml = xmlhttp.responseXML;
+			            			    	createMultiLineString(xml);
+			            			    	//TODO: Creazione delle DESCRIZIONE (DIRECTIONS)
+			            			        break;
+			            			    case 404: // Error: 404 - Resource not found!
+			            			    	alert("Error 404 Service Not Found!");
+			            			        break;
+			            			    case 500:
+			            			    	alert("Error 500 " + xmlhttp.responseText);
+			            			    	break;
+			            			    default:  // Error: Unknown!
+			            			    }
+			            			}    
+			            	    };
+			            	    
+			            	    xmlhttp.send(xml);
+			            	}else{
+			            		return Ext.MessageBox.alert('Error', 'Selected a Method!');;
+			            	}
 		            	}
 		            },
 		            {	
@@ -188,7 +219,79 @@ RNGEO.RoutinNavigationForm = Ext.extend(Ext.form.FormPanel, {
 	//dopo aver trascinato su mappa il punto iniziale / finale / intermedio
 	//sfrutta le informazione di endPoint e startPoint
 	,recalculateNavigation: function(){
-		//TODO: implemantazione
+		var xmlhttp = null;
+		var methodSearch = Ext.getCmp('method').getValue();
+		
+		if(methodSearch != ""){
+		
+    		if (window.XMLHttpRequest){
+    			// code for IE7+, Firefox, Chrome, Opera, Safari
+    			xmlhttp = new XMLHttpRequest();
+    		}else{
+    			// code for IE6, IE5
+    			xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+    		}
+    		
+    		var startValue = Ext.getCmp('startPoint').getValue();
+    		var endValue = Ext.getCmp('endPoint').getValue();
+    		
+    		var url = "http://"+host+"/geoserver/ols";
+    		var xml = "<?xml version='1.0' encoding='UTF-8'?>"
+    					+"<DetermineRouteRequest xmlns='http://www.opengis.net/xls' xmlns:gml='http://www.opengis.net/gml'>"
+    					+"	<RoutePlan>"
+    					+"		<RoutePreference>"+methodSearch+"</RoutePreference>"	
+    					+"		<WayPointList>"
+    					+"			<StartPoint>"
+    					+"				<Position>"
+    					+"					<gml:Point>"
+    					+"						<gml:pos>"+startPoint.lat +" "+ startPoint.lon+"</gml:pos>"
+    					+"					</gml:Point>"
+    					+"				</Position>"
+    					+"			</StartPoint>"
+    					+"			<EndPoint>"
+    					+"				<Position>"
+    					+"					<gml:Point>"
+    					+"						<gml:pos>"+endPoint.lat +" "+ endPoint.lon+"</gml:pos>"
+    					+"					</gml:Point>"
+    					+"				</Position>"
+    					+"			</EndPoint>"
+    					+"		</WayPointList>"
+    					+"	</RoutePlan>"
+    					+"	<RouteInstructionsRequest format='text/plain' provideGeometry='false'/>"
+    					+"	<RouteMapRequest>"
+    					+"		<Output format='png8' height='400' width='400'/>"
+    					+"	</RouteMapRequest>"
+    					+"</DetermineRouteRequest>";
+    		
+    		//Handler POST request
+    		xmlhttp.open("POST", url);
+    		
+    		xmlhttp.onreadystatechange = function() {
+    			if (xmlhttp.readyState==4)
+    			{
+    			    switch (xmlhttp.status)
+    			    {
+    			    case 200: // Do the Do
+    			    	
+    			    	xml = xmlhttp.responseXML;
+    			    	createMultiLineString(xml);
+    			    	//TODO: Creazione delle DESCRIZIONE (DIRECTIONS)
+    			        break;
+    			    case 404: // Error: 404 - Resource not found!
+    			    	alert("Error 404 Service Not Found!");
+    			        break;
+    			    case 500:
+    			    	alert("Error 500 " + xmlhttp.responseText);
+    			    	break;
+    			    default:  // Error: Unknown!
+    			    }
+    			}    
+    	    };
+    	    
+    	    xmlhttp.send(xml);
+    	}else{
+    		return Ext.MessageBox.alert('Error', 'Selected a Method!');;
+    	}
 	}
 });
 Ext.reg('routinnavigationform', RNGEO.RoutinNavigationForm);
