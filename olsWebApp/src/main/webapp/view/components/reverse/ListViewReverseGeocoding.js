@@ -123,7 +123,7 @@ RGEO.ListReverseGeoroutingForm = Ext.extend(Ext.form.FormPanel, {
 		        	                      },
 		        	                      handler: function(grid, rowIndex, colIndex) {
 		        	                          var rec = store.getAt(rowIndex);
-		        	                          alert("Buy " + rec.get('pos'));
+//		        	                          alert("Buy " + rec.get('pos'));
 		        	                      }
 		        	                  }]
 		        	              }

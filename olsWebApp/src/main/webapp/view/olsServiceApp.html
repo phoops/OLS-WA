@@ -33,6 +33,7 @@
 <script type="text/javascript" src="components/reverse/FormReverse.js"></script>
 <!-- extensions Routing Navigation -->
 <script type="text/javascript" src="components/routing/FormRoutingNavigation.js"></script>
+<script type="text/javascript" src="components/routing/ListNavigationDirection.js"></script>
 
 </head>
 <!-- page specific http://vmap0.tiles.osgeo.org/wms/vmap0-->
@@ -253,7 +254,11 @@
     		var formRN = new RNGEO.RoutinNavigationForm();
     		formRN.render(document.body);
     		
-    		
+    		//--------------------------
+    		//List  Navigation Direction
+    		//--------------------------
+    		var listRN = new RNGEO.ListNavigationDirection();
+    		listRN.render(document.body);
     		
     		//-----------------------
     		//Lista dei Risulatti GEO
@@ -467,15 +472,23 @@
 				var x = BBoxPoints[i].split(" ")[1];
 				bounds.extend(new OpenLayers.LonLat(x,y).transform(new OpenLayers.Projection("EPSG:4326"), new OpenLayers.Projection("EPSG:900913")));
 			}
-			//Controllo se è gia presente un altro persorso
+			
+
 			if(routeVisible){
-				routeLayer.removeAllFeatures();
-				map.removeLayer(routeLayer);  
+				vertorHandlerPoint.removeFeatures(vertorHandlerPoint.getFeatureByFid('line'));
 				routeVisible = false;
-			}else{			
-				routeLayer = new OpenLayers.Layer.Vector("Route");
 			}
-			map.addLayer(routeLayer);  
+				
+			
+			//Controllo se è gia presente un altro persorso
+// 			if(routeVisible){
+// 				routeLayer.removeAllFeatures();
+// 				map.removeLayer(routeLayer);  
+// 				routeVisible = false;
+// 			}else{			
+// 				routeLayer = new OpenLayers.Layer.Vector("Route");
+// 			}
+// 			map.addLayer(routeLayer);  
 			routeVisible = true;
 			
 			//Crea un array di Points
@@ -496,9 +509,19 @@
 					};
 			
 			var lineFeature = new OpenLayers.Feature.Vector(lineGeo, null, style);
-			routeLayer.addFeatures([lineFeature]);
+			lineFeature.fid = 'line';
+// 			routeLayer.addFeatures([lineFeature]);
+			vertorHandlerPoint.addFeatures([lineFeature]);
 			
-			map.setLayerIndex(routeLayer, 2);
+			//********************
+// 			OpenLayers.Handler.Path
+// 			dragLine = new OpenLayers.Control.ModifyFeature(routeLayer, {
+			
+// 			map.addControl(new OpenLayers.Control.DrawFeature(routeLayer, OpenLayers.Handler.Path));                                     
+			//********************
+// 			handlerViaControl(vertorHandlerPoint, event);
+			
+			map.setLayerIndex(vertorHandlerPoint, 2);
 			map.zoomToExtent(bounds);
 		}
 		
@@ -524,12 +547,12 @@
 		        		formReverse.getForm().findField('lat').setValue(location.lat);
 		                formReverse.getForm().findField('lon').setValue(location.lon);
 		                
-						if(feature.fid.toString() == "startPoint"){
+						if(feature.fid != null && feature.fid.toString() == "startPoint"){
 							formReverse.callService(location.lat, location.lon, document.location.host + ":" + document.location.port, 'reverseStart');
 		                	formRN.setStartPoint(location);
 		                	formRN.recalculateNavigation();
 						}
-						if(feature.fid.toString() == "endPoint"){
+						if(feature.fid != null && feature.fid.toString() == "endPoint"){
 							formReverse.callService(location.lat, location.lon, document.location.host + ":" + document.location.port, 'reverseEnd');
 							formRN.setEndPoint(location);
 							formRN.recalculateNavigation();
@@ -538,6 +561,18 @@
 			    });
 			 	controls.push(drag);
 				map.addControls(controls);
+		}
+		
+		function handlerViaControl(hpVector, feature){
+				if(feature.type == "routePointEvent"){
+			dragLine = new OpenLayers.Control.ModifyFeature(hpVector, {
+				dragComplete: function (feature){
+					alert('Chiama il Servizio di ricalcolo - ' +feature.fid );
+				}
+			});
+		    map.addControl(dragLine);
+		    dragLine.activate();
+			}
 		}
         
       </script>

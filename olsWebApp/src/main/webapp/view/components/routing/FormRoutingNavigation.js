@@ -155,7 +155,14 @@ RNGEO.RoutinNavigationForm = Ext.extend(Ext.form.FormPanel, {
 			            			    	
 			            			    	xml = xmlhttp.responseXML;
 			            			    	createMultiLineString(xml);
-			            			    	//TODO: Creazione delle DESCRIZIONE (DIRECTIONS)
+			            			    	
+			            			    	var streetDataNavArray = toArrayDataNavigation(xml);
+			            			    	if(streetDataNavArray.length == 0){
+			            			    		Ext.MessageBox.alert('Error', 'No Novigation Found!');
+			            			    		break;
+			            			    	}
+			            			    	Ext.getCmp('navigationList').handler(streetDataNavArray);
+			            			    	
 			            			        break;
 			            			    case 404: // Error: 404 - Resource not found!
 			            			    	alert("Error 404 Service Not Found!");
@@ -274,14 +281,25 @@ RNGEO.RoutinNavigationForm = Ext.extend(Ext.form.FormPanel, {
     			    case 200: // Do the Do
     			    	
     			    	xml = xmlhttp.responseXML;
+//    			    	alert(xmlhttp.responseText);
+    			    	//Chiama la funzione per la creazione dei POINTS
     			    	createMultiLineString(xml);
-    			    	//TODO: Creazione delle DESCRIZIONE (DIRECTIONS)
+    			    	//Chiama la funzione per il caricamento delle informazioni relative al percorso
+    			    	//popola la lista Navigation
+    			    	var streetDataNavArray = toArrayDataNavigation(xml);
+    			    	if(streetDataNavArray.length == 0){
+    			    		Ext.MessageBox.alert('Error', 'No Novigation Found!');
+    			    		break;
+    			    	}
+    			    	Ext.getCmp('navigationList').handler(streetDataNavArray);
     			        break;
     			    case 404: // Error: 404 - Resource not found!
-    			    	alert("Error 404 Service Not Found!");
+//    			    	alert("Error 404 Service Not Found!");
+    			    	Ext.MessageBox.alert('Error 404', 'Service Not Found!');
     			        break;
     			    case 500:
-    			    	alert("Error 500 " + xmlhttp.responseText);
+    			    	Ext.MessageBox.alert('Error', xmlhttp.responseText.toString());
+//    			    	alert("Error 500 " + xmlhttp.responseText);
     			    	break;
     			    default:  // Error: Unknown!
     			    }
@@ -290,7 +308,7 @@ RNGEO.RoutinNavigationForm = Ext.extend(Ext.form.FormPanel, {
     	    
     	    xmlhttp.send(xml);
     	}else{
-    		return Ext.MessageBox.alert('Error', 'Selected a Method!');;
+    		return Ext.MessageBox.alert('Error', 'Selected a Method!');
     	}
 	}
 });
@@ -315,21 +333,26 @@ function createMultiLineString(xml){
 		}
 	}
 	
-
-	
-	
-	nodeAddress = xml.getElementsByTagNameNS(namespace2, "pos");
+	//Calcolo della Route
 	var routePoint = "";
-	//TODO: da ricontrollare per il recupero del dei POS se non è presente il BBOX -> NON FUNZIONA
-	//Inizio a ciclare da i=2 -> perche' i primi due sono quelli associati al BoundingBox
-	for(var i=2; i<nodeAddress.length; i++){
-		var item = nodeAddress.item(i);
-		if(i == nodeAddress.length-1){
-			routePoint += item.firstChild.nodeValue;
-		}else{
-			routePoint += item.firstChild.nodeValue+",";
+	routeGeo = xml.getElementsByTagNameNS(namespace, "RouteGeometry");
+	for(var i=0; i<routeGeo.length; i++){
+		item = routeGeo.item(i);
+		lineString = item.getElementsByTagNameNS(namespace2, "LineString");
+		for(var j=0; j<lineString.length; j++){
+			itemLine= lineString.item(j);
+			posPoint = itemLine.getElementsByTagNameNS(namespace2, "pos");
+			for(var k=0; k<posPoint.length; k++){
+				itemPos= posPoint.item(k);
+				if(k == posPoint.length-1){
+					routePoint += itemPos.firstChild.nodeValue;
+				}else{
+					routePoint += itemPos.firstChild.nodeValue+",";
+				}
+			}
 		}
 	}
+	
 	routePoint = routePoint + "";
 	//Creo l'evento per il passaggio delle lista dei Points da disegnare su mappa tramite OpenLayers
 	var evt = document.createEvent("Event");
@@ -339,10 +362,46 @@ function createMultiLineString(xml){
     //Aggiunta delle informazioni relative al BBox
     evt.BBox = BBoxPoints;
     document.dispatchEvent(evt);
+}
+
+function toArrayDataNavigation(xml){
+	arraDataObjNav = [];
+	var instruction = "";
 	
-	return routePoint;
+	routeInstructionsList = routeGeo = xml.getElementsByTagNameNS(namespace, "RouteInstructionsList");
+	for(var i=0; i<routeInstructionsList.length; i++){
+		item = routeInstructionsList.item(i);
+		routeInstruction = item.getElementsByTagNameNS(namespace, "RouteInstruction");
+		for(var j=0; j<routeInstruction.length; j++){
+			item2 = routeInstruction.item(j);
+			instructionNode = item2.getElementsByTagNameNS(namespace, "Instruction");
+				instruction = instructionNode.item(0).firstChild.nodeValue;;
+				arraDataObjNav.push([instruction]);
+		}
+	}
+	return arraDataObjNav;
 }
 
 function createDescDirection(xml){
+	var instruction = "";
 	
+	routeInstructionsList = routeGeo = xml.getElementsByTagNameNS(namespace, "RouteInstructionsList");
+	for(var i=0; i<routeInstructionsList.length; i++){
+		item = routeInstructionsList.item(i);
+		routeInstruction = item.getElementsByTagNameNS(namespace, "RouteInstruction");
+		for(var j=0; j<routeInstruction.length; j++){
+			item2 = routeInstruction.item(j);
+			instructionNode = item2.getElementsByTagNameNS(namespace, "Instruction");
+			if(j == routeInstruction.length-1){
+				instruction += instruction = instructionNode.item(0).firstChild.nodeValue;;
+			}else{
+				instruction += instruction = instructionNode.item(0).firstChild.nodeValue;+",";
+			}
+		}
+	}
+	var evt = document.createEvent("Event");
+    evt.initEvent("navigationEvent",true,true);
+    //Aggiunta delle informazioni per navigazione
+    evt.instruction = instruction;
+    document.dispatchEvent(evt);
 }
