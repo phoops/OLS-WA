@@ -73,6 +73,16 @@ GEO.GeoroutingForm = Ext.extend(Ext.form.FormPanel, {
 		          {
 		        	  fieldLabel: 'Toponimo', 
 		        	  id: 'via',
+//		        	  enableKeyEvents: true,
+//	            	  listeners: {
+//	            	      keypress : function(textfield,eventObjet){
+//	            	    	  alert(eventObject.getCharCode());
+//	            	          if (eventObject.getCharCode() == Ext.EventObject.ENTER) {
+//	            	               //enter is pressed call the next buttons handler function here.
+//	            	               alert("Call the submit");
+//	            	          }
+//	            	      }
+//	            	  },
 		        	  validator: function(v){
 		        		  if (v === "" || v == null || v.lenght == 0) {
 		        		        return "Value is incorrect";

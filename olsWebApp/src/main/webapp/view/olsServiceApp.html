@@ -243,15 +243,17 @@
     		form.setHost(document.location.host + ":" + document.location.port);
     		
     		//-----------------------
+    		//Form Reverse Georouting
+    		//-----------------------
+    		formReverse.render(document.body);
+    		
+    		//-----------------------
     		//Form Routing Navigation
     		//-----------------------
     		var formRN = new RNGEO.RoutinNavigationForm();
     		formRN.render(document.body);
     		
-    		//-----------------------
-    		//Form Reverse Georouting
-    		//-----------------------
-    		formReverse.render(document.body);
+    		
     		
     		//-----------------------
     		//Lista dei Risulatti GEO
@@ -456,6 +458,15 @@
 			var routeMLS = event.routeList;
 			var points = routeMLS.split(",");
 			
+			var BBox = event.BBox;
+			//Creazione del BoundingBox per lo Zoom
+			var BBoxPoints = BBox.split(",");
+			bounds = new OpenLayers.Bounds();
+			for(var i=0; i<BBoxPoints.length; i++){
+				var y = BBoxPoints[i].split(" ")[0];
+				var x = BBoxPoints[i].split(" ")[1];
+				bounds.extend(new OpenLayers.LonLat(x,y).transform(new OpenLayers.Projection("EPSG:4326"), new OpenLayers.Projection("EPSG:900913")));
+			}
 			//Controllo se è gia presente un altro persorso
 			if(routeVisible){
 				routeLayer.removeAllFeatures();
@@ -488,8 +499,12 @@
 			routeLayer.addFeatures([lineFeature]);
 			
 			map.setLayerIndex(routeLayer, 2);
+			map.zoomToExtent(bounds);
 		}
 		
+		/**
+		*	Funzione di Ricalcolo del Percorso al momento del DRAG dei punti 
+		**/
 		function handlerStartEndControl(hpVector, feature){
 			formRN = Ext.getCmp("routingID");
 			var controls = new Array();

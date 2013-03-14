@@ -297,8 +297,30 @@ RNGEO.RoutinNavigationForm = Ext.extend(Ext.form.FormPanel, {
 Ext.reg('routinnavigationform', RNGEO.RoutinNavigationForm);
 
 function createMultiLineString(xml){
+	//Calcolo del BoundingBox
+	bBox = xml.getElementsByTagNameNS(namespace, "BoundingBox");
+	var BBoxPoints = "";
+	
+	for(var i=0; i<bBox.length; i++){
+		item = bBox.item(i);
+		bBoxPOS = item.getElementsByTagNameNS(namespace2, "pos");
+		//Ciclo sui POS per il recupero del BBox
+		for(var j=0; j<bBoxPOS.length; j++){
+			itemPos = bBoxPOS.item(j);
+			if(j == bBoxPOS.length-1){
+				BBoxPoints += itemPos.firstChild.nodeValue;
+			}else{
+				BBoxPoints += itemPos.firstChild.nodeValue+",";
+			}
+		}
+	}
+	
+
+	
+	
 	nodeAddress = xml.getElementsByTagNameNS(namespace2, "pos");
 	var routePoint = "";
+	//TODO: da ricontrollare per il recupero del dei POS se non è presente il BBOX -> NON FUNZIONA
 	//Inizio a ciclare da i=2 -> perche' i primi due sono quelli associati al BoundingBox
 	for(var i=2; i<nodeAddress.length; i++){
 		var item = nodeAddress.item(i);
@@ -312,7 +334,10 @@ function createMultiLineString(xml){
 	//Creo l'evento per il passaggio delle lista dei Points da disegnare su mappa tramite OpenLayers
 	var evt = document.createEvent("Event");
     evt.initEvent("routePointEvent",true,true);
+    //Aggiunta delle informazioni relative alla Route
     evt.routeList = routePoint;
+    //Aggiunta delle informazioni relative al BBox
+    evt.BBox = BBoxPoints;
     document.dispatchEvent(evt);
 	
 	return routePoint;
