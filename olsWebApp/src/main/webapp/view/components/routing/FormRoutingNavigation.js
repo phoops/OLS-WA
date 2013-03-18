@@ -2,6 +2,7 @@ Ext.ns('RNGEO');
 var host = document.location.host;
 var startPoint = null;
 var endPoint = null;
+var viaPoints = []; 
 var namespace = 'http://www.opengis.net/xls';
 var namespace2 = 'http://www.opengis.net/gml';
 RNGEO.RoutinNavigationForm = Ext.extend(Ext.form.FormPanel, {
@@ -222,6 +223,31 @@ RNGEO.RoutinNavigationForm = Ext.extend(Ext.form.FormPanel, {
 		endPoint = ePoint;
 	}
 	
+	,addToViaPoint:function(vPoint){
+		viaPoints.push(vPoint);
+	}
+	
+	,updateViaPoint:function(index, location){
+		for(var i=0; i<viaPoints.length; i++){
+			if(i == (index-1)){
+				viaPoints[i] = location;
+			}
+		}
+	}
+	
+	,removeViaPoint:function(index){
+		if(viaPoints.length == 1){
+			viaPoints = [];
+		}else{
+			viaPoints.splice(index-1,1);
+		}
+		var evt = document.createEvent("Event");
+	    evt.initEvent("indexViaUpdateEvent",true,true);
+	    evt.indexViaUp = (viaPoints.length + 1);
+	    evt.indexDeleted = index;
+	    document.dispatchEvent(evt);
+	}
+	
 	//Funzione utilizzata per il ricalcolo del percorso
 	//dopo aver trascinato su mappa il punto iniziale / finale / intermedio
 	//sfrutta le informazione di endPoint e startPoint
@@ -242,6 +268,17 @@ RNGEO.RoutinNavigationForm = Ext.extend(Ext.form.FormPanel, {
     		var startValue = Ext.getCmp('startPoint').getValue();
     		var endValue = Ext.getCmp('endPoint').getValue();
     		
+    		var xmlVia = "";
+    		for(var i=0; i<viaPoints.length; i++){
+    			xmlVia += "			<ViaPoint>"
+    					+"				<Position>"
+    					+"					<gml:Point>"
+    					+"						<gml:pos>"+viaPoints[i].lat +" "+ viaPoints[i].lon+"</gml:pos>"
+    					+"					</gml:Point>"
+    					+"				</Position>"
+    					+"			</ViaPoint>";
+    		}
+    		
     		var url = "http://"+host+"/geoserver/ols";
     		var xml = "<?xml version='1.0' encoding='UTF-8'?>"
     					+"<DetermineRouteRequest xmlns='http://www.opengis.net/xls' xmlns:gml='http://www.opengis.net/gml'>"
@@ -255,6 +292,7 @@ RNGEO.RoutinNavigationForm = Ext.extend(Ext.form.FormPanel, {
     					+"					</gml:Point>"
     					+"				</Position>"
     					+"			</StartPoint>"
+    					+xmlVia			
     					+"			<EndPoint>"
     					+"				<Position>"
     					+"					<gml:Point>"
