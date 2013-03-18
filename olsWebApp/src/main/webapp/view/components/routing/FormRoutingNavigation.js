@@ -115,6 +115,16 @@ RNGEO.RoutinNavigationForm = Ext.extend(Ext.form.FormPanel, {
 			            		
 			            		var startValue = Ext.getCmp('startPoint').getValue();
 			            		var endValue = Ext.getCmp('endPoint').getValue();
+			            		var xmlVia = "";
+			            		for(var i=0; i<viaPoints.length; i++){
+			            			xmlVia += "			<ViaPoint>"
+			            					+"				<Position>"
+			            					+"					<gml:Point>"
+			            					+"						<gml:pos>"+viaPoints[i].lat +" "+ viaPoints[i].lon+"</gml:pos>"
+			            					+"					</gml:Point>"
+			            					+"				</Position>"
+			            					+"			</ViaPoint>";
+			            		}
 			            		
 			            		var url = "http://"+host+"/geoserver/ols";
 			            		var xml = "<?xml version='1.0' encoding='UTF-8'?>"
@@ -129,6 +139,7 @@ RNGEO.RoutinNavigationForm = Ext.extend(Ext.form.FormPanel, {
 			            					+"					</gml:Point>"
 			            					+"				</Position>"
 			            					+"			</StartPoint>"
+			            					+xmlVia
 			            					+"			<EndPoint>"
 			            					+"				<Position>"
 			            					+"					<gml:Point>"
@@ -307,7 +318,6 @@ RNGEO.RoutinNavigationForm = Ext.extend(Ext.form.FormPanel, {
     					+"		<Output format='png8' height='400' width='400'/>"
     					+"	</RouteMapRequest>"
     					+"</DetermineRouteRequest>";
-    		
     		//Handler POST request
     		xmlhttp.open("POST", url);
     		

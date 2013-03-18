@@ -397,6 +397,72 @@
     		
     	});
         
+      	//-------------------------------
+		//Dispacher dell'evento Via Point
+		//-------------------------------
+		document.addEventListener("viaPointEvent",handlerZoomViaPoint,false);
+		
+		//Definizione del handler
+		function handlerZoomViaPoint(event){
+			formRN = Ext.getCmp("routingID");
+			var position = event.pos;
+			var lon = position.split(" ")[0];
+			var lat = position.split(" ")[1];
+			
+			var location = new OpenLayers.LonLat(lon,lat).transform(new OpenLayers.Projection("EPSG:4326"), new OpenLayers.Projection("EPSG:900913"));
+			var locationPoint = new OpenLayers.LonLat(location.lon,location.lat).transform(new OpenLayers.Projection("EPSG:900913"), new OpenLayers.Projection("EPSG:4326"));
+		    
+		    
+			var point = new OpenLayers.Geometry.Point(lon, lat).transform(new OpenLayers.Projection("EPSG:4326"), new OpenLayers.Projection("EPSG:900913"));
+ 		    indexVia += 1;
+		    var attributes = {
+		    					name: "viaPoint",
+		    					index: indexVia 
+		    				  };
+		    viaFeature = new OpenLayers.Feature.Vector(
+		    						point, attributes,
+		     						{externalGraphic: '../resources/img/viaPoint.png', graphicHeight: 39, graphicWidth: 21});
+		    
+		    viaFeature.fid = 'viaPoint';
+		    vertorHandlerPoint.addFeatures(viaFeature);
+		    
+		  	
+		    selectControl = new OpenLayers.Control.SelectFeature(vertorHandlerPoint,
+	                {	autoActivate: true,
+		    			onSelect: function(feature){
+							if(feature.fid == "viaPoint"){
+			    				selectedFeature = feature;
+			    				if(popupSelection == null){
+			    					popupSelection = new OpenLayers.Popup.FramedCloud("chicken", 
+				    	                                     feature.geometry.getBounds().getCenterLonLat(),
+				    	                                     new OpenLayers.Size(100,300),
+				    	                                     "<div style='font-size:.8em'><b>Action on Feature</b><br><IMG SRC='../resources/img/deleteVia.png' ALIGN='absmiddle'><a href='#' onclick='removeViaPoint("+feature.attributes.index+");'>Remove Via Point</a></div>",
+				    	                                     null, true);
+				    	            feature.popup = popupSelection;
+				    	            map.addPopup(popupSelection);
+			    				}else{
+			    					popupSelection.destroy();
+			    					popupSelection = new OpenLayers.Popup.FramedCloud("chicken", 
+   	                                     feature.geometry.getBounds().getCenterLonLat(),
+   	                                     new OpenLayers.Size(100,300),
+   	                                     "<div style='font-size:.8em'><b>Action on Feature</b><br><IMG SRC='../resources/img/deleteVia.png' ALIGN='absmiddle'><a href='#' onclick='removeViaPoint("+feature.attributes.index+");'>Remove Via Point</a></div>",
+   	                                     null, true);
+					   	            feature.popup = popupSelection;
+					   	            map.addPopup(popupSelection);
+			    				}
+							}
+		    			}
+	                });
+		    map.addControl(selectControl);
+		    map.setCenter(locationPoint.transform(new OpenLayers.Projection("EPSG:4326"), new OpenLayers.Projection("EPSG:900913")),17);
+		    
+		  	formRN.addToViaPoint(new OpenLayers.LonLat(lon,lat));
+			formRN.recalculateNavigation();
+            viaVisible = true;
+		}
+		
+// 	});
+        
         /**
         * Questa funzione si occupa di aggiungere un marker "Finale" alla mappa
         * dal quale verra' calcolato il percorso tramite il servizio di routingNavigation
@@ -681,13 +747,11 @@
 			vertorHandlerPoint.removeFeatures(vertorHandlerPoint.getFeaturesByAttribute('index',index));
 			
 			var arrayFeatureAll = vertorHandlerPoint.features;
-			if(index > 1){
-				for(var i=0; i<arrayFeatureAll.length; i++){
-					if(arrayFeatureAll[i].fid == 'viaPoint'
-							&& arrayFeatureAll[i].attributes.index > indexToDelete){
-						var featureTuUpdate = vertorHandlerPoint.getFeaturesByAttribute('index',i);					
-						vertorHandlerPoint.getFeaturesByAttribute('index',i)[0].attributes.index = arrayFeatureAll[i].attributes.index -1;  
-					}
+			for(var i=0; i<arrayFeatureAll.length; i++){
+				if(arrayFeatureAll[i].fid == 'viaPoint'
+						&& arrayFeatureAll[i].attributes.index > indexToDelete){
+					var featureTuUpdate = vertorHandlerPoint.getFeaturesByAttribute('index',i);					
+					vertorHandlerPoint.getFeaturesByAttribute('index',i)[0].attributes.index = arrayFeatureAll[i].attributes.index -1;  
 				}
 			}
 			

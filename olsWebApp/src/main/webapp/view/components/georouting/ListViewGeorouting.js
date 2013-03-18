@@ -122,17 +122,36 @@ GEO.ListGeoroutingForm = Ext.extend(Ext.grid.GridPanel, {
                                       xtype: 'actioncolumn',
                                       width: 50,
                                       items: [{
-                                          icon   : '../resources/img/recalculate.png',  // Use a URL in the icon config
-                                          tooltip: 'Recalculate',
+                                          icon   : '../resources/img/via.png',  // Use a URL in the icon config
+                                          tooltip: 'Via Point',
                                           handler: function(grid, rowIndex, colIndex) {
-                                              var rec = store.getAt(rowIndex);
-                                              var value = rec.get('street');
-                                              //TODO: da eliminare lo split quando verrà restituito il nomero senza civico
-                                              var tValue = value.split(",")[0];
-                                              Ext.getCmp('geoSubmit').handler(tValue);
+                                        	  var rec = store.getAt(rowIndex);
+//                                              Ext.getCmp('routingID').getForm().findField('viaPoint').setValue(rec.get('street'));
+                                              position = rec.get('pos');
+                                              //Create the event for End Point
+                                              var evt = document.createEvent("Event");
+                                              evt.initEvent("viaPointEvent",true,true);
+                                              evt.pos = position;
+                                              document.dispatchEvent(evt);
                                           }
                                       }]
                                   }
+//                                  ,
+//                                  {
+//                                      xtype: 'actioncolumn',
+//                                      width: 50,
+//                                      items: [{
+//                                          icon   : '../resources/img/recalculate.png',  // Use a URL in the icon config
+//                                          tooltip: 'Recalculate',
+//                                          handler: function(grid, rowIndex, colIndex) {
+//                                              var rec = store.getAt(rowIndex);
+//                                              var value = rec.get('street');
+//                                              //TODO: da eliminare lo split quando verrà restituito il nomero senza civico
+//                                              var tValue = value.split(",")[0];
+//                                              Ext.getCmp('geoSubmit').handler(tValue);
+//                                          }
+//                                      }]
+//                                  }
                               ]
         };
 
