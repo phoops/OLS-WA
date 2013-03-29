@@ -184,7 +184,11 @@ RNGEO.RoutinNavigationForm = Ext.extend(Ext.form.FormPanel, {
 			            			        break;
 			            			    case 500:
 			            			    	document.body.style.cursor = "default";
-			            			    	alert("Error 500 " + xmlhttp.responseText);
+			            			    	if(xmlhttp.responseXML == null)
+			            			    		Ext.MessageBox.alert("Error", "Path not found!");
+			            			    	else
+			            			    		alert(xmlhttp.responseText);
+//			            			    	alert("Error 500 " + xmlhttp.responseText);
 			            			    	break;
 			            			    default:  // Error: Unknown!
 			            			    }
@@ -355,7 +359,11 @@ RNGEO.RoutinNavigationForm = Ext.extend(Ext.form.FormPanel, {
     			        break;
     			    case 500:
     			    	document.body.style.cursor = "default";
-    			    	Ext.MessageBox.alert('Error', xmlhttp.responseText.toString());
+    			    	if(xmlhttp.responseXML == null)
+    			    		Ext.MessageBox.alert("Error", "Path not found!");
+    			    	else
+    			    		alert(xmlhttp.responseText);
+//    			    	Ext.MessageBox.alert('Error', xmlhttp);
 //    			    	alert("Error 500 " + xmlhttp.responseText);
     			    	break;
     			    default:  // Error: Unknown!
