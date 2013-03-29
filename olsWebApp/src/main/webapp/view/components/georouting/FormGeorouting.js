@@ -96,6 +96,7 @@ GEO.GeoroutingForm = Ext.extend(Ext.form.FormPanel, {
 		            	id: 'geoSubmit',
 		            	text: 'Submit',
 		            	handler: function(toponimo){
+		            		document.body.style.cursor = "wait";
 		            		if(Ext.getCmp('provincia').isValid()
 		            				&& Ext.getCmp('comune').isValid()
 		            				&& Ext.getCmp('via').isValid()){
@@ -152,12 +153,15 @@ GEO.GeoroutingForm = Ext.extend(Ext.form.FormPanel, {
 			            			    		break;
 			            			    	}
 			            			    	Ext.getCmp('streesList').handler(streetDataArray);
+			            			    	document.body.style.cursor = "default";
 			            			    	
 			            			        break;
 			            			    case 404: // Error: 404 - Resource not found!
+			            			    	document.body.style.cursor = "default";
 			            			    	alert("Error 404 Service Not Found!");
 			            			        break;
 			            			    case 500:
+			            			    	document.body.style.cursor = "default";
 			            			    	alert("Error 500 " + xmlhttp.responseText);
 			            			    	break;
 			            			    default:  // Error: Unknown!
@@ -167,6 +171,7 @@ GEO.GeoroutingForm = Ext.extend(Ext.form.FormPanel, {
 			            	    
 			            	    xmlhttp.send(xml);
 		            		}else{
+		            			document.body.style.cursor = "default";
 		            			return;
 		            		}
 		            	}

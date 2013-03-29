@@ -48,6 +48,7 @@ RGEO.ReverseGeoroutingForm = Ext.extend(Ext.form.FormPanel, {
 	
 	//Si occupa di richiamare il servizio di Reverse Geocoding
 	,callService:function(lat, lon, hostName, typeCall){
+		document.body.style.cursor = "wait";
 		var xmlhttp = null;
 		
 		if (window.XMLHttpRequest){
@@ -86,11 +87,15 @@ RGEO.ReverseGeoroutingForm = Ext.extend(Ext.form.FormPanel, {
 			    	else if(typeCall == 'reverseEnd')
 			    		Ext.getCmp('endPoint').handler(streetsData);
 			    	
+			    	document.body.style.cursor = "default";
+			    	
 			        break;
 			    case 404: // Error: 404 - Resource not found!
+			    	document.body.style.cursor = "default";
 			    	alert("Error 404 Service Not Found!");
 			        break;
 			    case 500:
+			    	document.body.style.cursor = "default";
 			    	alert("Error 500 " + xmlhttp.responseText);
 			    	break;
 			    default:  // Error: Unknown!
