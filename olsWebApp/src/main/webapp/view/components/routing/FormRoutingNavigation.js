@@ -100,6 +100,7 @@ RNGEO.RoutinNavigationForm = Ext.extend(Ext.form.FormPanel, {
 		            	id: 'geoRNSubmit',
 		            	text: 'Submit',
 		            	handler: function(toponimo){
+		            		document.body.style.cursor = "wait";
 		            		var xmlhttp = null;
 		            		var methodSearch = Ext.getCmp('method').getValue();
 		            		
@@ -175,12 +176,19 @@ RNGEO.RoutinNavigationForm = Ext.extend(Ext.form.FormPanel, {
 			            			    	}
 			            			    	Ext.getCmp('navigationList').handler(streetDataNavArray);
 			            			    	
+			            			    	document.body.style.cursor = "default";
 			            			        break;
 			            			    case 404: // Error: 404 - Resource not found!
+			            			    	document.body.style.cursor = "default";
 			            			    	alert("Error 404 Service Not Found!");
 			            			        break;
 			            			    case 500:
-			            			    	alert("Error 500 " + xmlhttp.responseText);
+			            			    	document.body.style.cursor = "default";
+			            			    	if(xmlhttp.responseXML == null)
+			            			    		Ext.MessageBox.alert("Error", "Path not found!");
+			            			    	else
+			            			    		alert(xmlhttp.responseText);
+//			            			    	alert("Error 500 " + xmlhttp.responseText);
 			            			    	break;
 			            			    default:  // Error: Unknown!
 			            			    }
@@ -189,6 +197,7 @@ RNGEO.RoutinNavigationForm = Ext.extend(Ext.form.FormPanel, {
 			            	    
 			            	    xmlhttp.send(xml);
 			            	}else{
+			            		document.body.style.cursor = "default";
 			            		return Ext.MessageBox.alert('Error', 'Selected a Method!');;
 			            	}
 		            	}
@@ -263,6 +272,7 @@ RNGEO.RoutinNavigationForm = Ext.extend(Ext.form.FormPanel, {
 	//dopo aver trascinato su mappa il punto iniziale / finale / intermedio
 	//sfrutta le informazione di endPoint e startPoint
 	,recalculateNavigation: function(){
+		document.body.style.cursor = "wait";
 		var xmlhttp = null;
 		var methodSearch = Ext.getCmp('method').getValue();
 		
@@ -340,13 +350,20 @@ RNGEO.RoutinNavigationForm = Ext.extend(Ext.form.FormPanel, {
     			    		break;
     			    	}
     			    	Ext.getCmp('navigationList').handler(streetDataNavArray);
+    			    	document.body.style.cursor = "default";
     			        break;
     			    case 404: // Error: 404 - Resource not found!
 //    			    	alert("Error 404 Service Not Found!");
+    			    	document.body.style.cursor = "default";
     			    	Ext.MessageBox.alert('Error 404', 'Service Not Found!');
     			        break;
     			    case 500:
-    			    	Ext.MessageBox.alert('Error', xmlhttp.responseText.toString());
+    			    	document.body.style.cursor = "default";
+    			    	if(xmlhttp.responseXML == null)
+    			    		Ext.MessageBox.alert("Error", "Path not found!");
+    			    	else
+    			    		alert(xmlhttp.responseText);
+//    			    	Ext.MessageBox.alert('Error', xmlhttp);
 //    			    	alert("Error 500 " + xmlhttp.responseText);
     			    	break;
     			    default:  // Error: Unknown!
@@ -356,6 +373,7 @@ RNGEO.RoutinNavigationForm = Ext.extend(Ext.form.FormPanel, {
     	    
     	    xmlhttp.send(xml);
     	}else{
+    		document.body.style.cursor = "default";
     		return Ext.MessageBox.alert('Error', 'Selected a Method!');
     	}
 	}
