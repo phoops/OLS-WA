@@ -54,6 +54,7 @@
       	var vectorLayer 			= new OpenLayers.Layer.Vector("Overlay");
       	var routeLayer 				= new OpenLayers.Layer.Vector("Route");
       	var vertorHandlerPoint 		= new OpenLayers.Layer.Vector("Handler Point");
+      	var vectorPointNavigation	= null;
       	var startVisible 			= false;
       	var endVisible 				= false;
       	var viaVisible 				= false;
@@ -132,18 +133,18 @@
 	            	  popup = new OpenLayers.Popup.FramedCloud("featurePopup",
 	                          lonlat,
 	                          new OpenLayers.Size(200,200),
-	                          "<h2> Navigation Info </h2>"
+	                          "<div style='color: #15428b;'><img src='../resources/img/navigation.png'/><b> Navigation Route </b></div><hr>"
 	                          	  +"<div style='font-size:.8em'>"	
-		                          	+"Insert a Poin Navigation"
+		                          	+"<div style='padding: 5px; color: #5a7dac;'><b>Choose a point navigation to <br> start, stop or end the travel</b></div>"
 		//                           +"Longitudine: "+lonlat.lon+ "<br> Latidutine: "+lonlat.lat
-									+"<br><button href='#' onclick='addStartMarker("+lonlat.lon+","+lonlat.lat+");'>"
-		                          	+"<IMG SRC='../resources/img/sta.png' ALIGN='absmiddle'> Start from here</button>"+
+									+"<br><a href='#' onclick='addStartMarker("+lonlat.lon+","+lonlat.lat+");'>"
+		                          	+"<IMG SRC='../resources/img/sta.png' ALIGN='absmiddle'> Start from here</a><br>"+
 		                          	
-		                          	"<button href='#' onclick='addEndMarker("+lonlat.lon+","+lonlat.lat+");'>"
-		                          	+"<IMG SRC='../resources/img/fin.png' ALIGN='absmiddle'> End to here</button>"+
+		                          	"<a href='#' onclick='addEndMarker("+lonlat.lon+","+lonlat.lat+");'>"
+		                          	+"<IMG SRC='../resources/img/fin.png' ALIGN='absmiddle'> End to here</a><br>"+
 		                          	
-		                          	"<button href='#' onclick='addViaMarker("+lonlat.lon+","+lonlat.lat+");'>"
-		                          	+"<IMG SRC='../resources/img/via.png' ALIGN='absmiddle'> Stop Here</button>"
+		                          	"<a href='#' onclick='addViaMarker("+lonlat.lon+","+lonlat.lat+");'>"
+		                          	+"<IMG SRC='../resources/img/via.png' ALIGN='absmiddle'> Stop Here</a>"
 		                          +"</div>",
 	                          null, true);
 	
@@ -153,18 +154,18 @@
             		  popup = new OpenLayers.Popup.FramedCloud("featurePopup",
 	                          lonlat,
 	                          new OpenLayers.Size(200,200),
-	                          "<h2> Navigation Info</h2>" 
-	                          +"<div style='font-size:.8em'>"	
-		                        +"Insert a Poin Navigation"
+	                          "<div style='color: #15428b;'><img src='../resources/img/navigation.png'/><b> Navigation Route </b></div><hr>"
+                          	  +"<div style='font-size:.8em'>"	
+	                          	+"<div style='padding: 5px; color: #5a7dac;'><b>Choose a point navigation to <br> start, stop or end the travel</b></div>"
 	//                           +"Longitudine: "+lonlat.lon+ "<br> Latidutine: "+lonlat.lat
-								+"<br><button href='#' onclick='addStartMarker("+lonlat.lon+","+lonlat.lat+");'>"
-	                          	+"<IMG SRC='../resources/img/sta.png' ALIGN='absmiddle'> Start from here</button>"+
+								+"<br><a href='#' onclick='addStartMarker("+lonlat.lon+","+lonlat.lat+");'>"
+	                          	+"<IMG SRC='../resources/img/sta.png' ALIGN='absmiddle'> Start from here</a><br>"+
 	                          	
-	                          	"<button href='#' onclick='addEndMarker("+lonlat.lon+","+lonlat.lat+");'>"
-	                          	+"<IMG SRC='../resources/img/fin.png' ALIGN='absmiddle'> End to here</button>"+
+	                          	"<a href='#' onclick='addEndMarker("+lonlat.lon+","+lonlat.lat+");'>"
+	                          	+"<IMG SRC='../resources/img/fin.png' ALIGN='absmiddle'> End to here</a><br>"+
 	                          	
-	                          	"<button href='#' onclick='addViaMarker("+lonlat.lon+","+lonlat.lat+");'>"
-	                          	+"<IMG SRC='../resources/img/via.png' ALIGN='absmiddle'> Stop Here</button>"
+	                          	"<a href='#' onclick='addViaMarker("+lonlat.lon+","+lonlat.lat+");'>"
+	                          	+"<IMG SRC='../resources/img/via.png' ALIGN='absmiddle'> Stop Here</a>"
 	                          +"</div>",
 	                          null, true);
             		  map.addPopup(popup);
@@ -523,7 +524,7 @@
 		    viaFeature.fid = 'viaPoint';
 		    vertorHandlerPoint.addFeatures(viaFeature);
 		    
-		    selectControl = new OpenLayers.Control.SelectFeature(vertorHandlerPoint,
+		    selectControl = new OpenLayers.Control.SelectFeature([vertorHandlerPoint, vectorPointNavigation],
 	                {	autoActivate: true,
 		    			onSelect: function(feature){
 							if(feature.fid == "viaPoint"){
@@ -532,7 +533,7 @@
 			    					popupSelection = new OpenLayers.Popup.FramedCloud("chicken", 
 				    	                                     feature.geometry.getBounds().getCenterLonLat(),
 				    	                                     new OpenLayers.Size(100,300),
-				    	                                     "<div style='font-size:.8em'><b>Action on Feature</b><br><IMG SRC='../resources/img/deleteVia.png' ALIGN='absmiddle'><a href='#' onclick='removeViaPoint("+feature.attributes.index+");'>Remove Via Point</a></div>",
+				    	                                     "<div style='color: #15428b;'><img src='../resources/img/navigation.png'/><b> Action on Feature </b></div><hr><br><IMG SRC='../resources/img/deleteVia.png' ALIGN='absmiddle'><a href='#' onclick='removeViaPoint("+feature.attributes.index+");'>Remove Via Point</a></div>",
 				    	                                     null, true);
 				    	            feature.popup = popupSelection;
 				    	            map.addPopup(popupSelection);
@@ -541,7 +542,7 @@
 			    					popupSelection = new OpenLayers.Popup.FramedCloud("chicken", 
    	                                     feature.geometry.getBounds().getCenterLonLat(),
    	                                     new OpenLayers.Size(100,300),
-   	                                     "<div style='font-size:.8em'><b>Action on Feature</b><br><IMG SRC='../resources/img/deleteVia.png' ALIGN='absmiddle'><a href='#' onclick='removeViaPoint("+feature.attributes.index+");'>Remove Via Point</a></div>",
+   	                                  "<div style='color: #15428b;'><img src='../resources/img/navigation.png'/><b> Action on Feature </b></div><hr><br><IMG SRC='../resources/img/deleteVia.png' ALIGN='absmiddle'><a href='#' onclick='removeViaPoint("+feature.attributes.index+");'>Remove Via Point</a></div>",
    	                                     null, true);
 					   	            feature.popup = popupSelection;
 					   	            map.addPopup(popupSelection);
@@ -650,6 +651,130 @@
 			map.zoomToExtent(bounds);
 		}
 		
+		//-------------------------------
+		//Dispacher dell'evento geoNavigationInfo
+		//-------------------------------
+		document.addEventListener("geoNavigationInfoEvent",handlerNavigationInfoMarker,false);
+		
+		/**
+		* Hadler per la visualizzazione dei punti intermeti presenti all'interno di un persorso
+		* Si occupa della visualizzazione tramte popup delle informazione relative alle singole svolte
+		* Il popup viene automaticamente mostrato all'evento hover del mouse sulle features
+		**/
+		function handlerNavigationInfoMarker(event){
+			//Recupero delle informazioni dall'evento 
+			routeInfo 		= event.navigationInfo;
+			routePos 		= event.pos;
+			var dimInfo 	= routeInfo.length;
+			var dimPos 		= routePos.length;
+			var features 	= [];
+			
+			//Controllo se deve essere eliminato il layer precedente
+			if(vectorPointNavigation != null){
+				vectorPointNavigation.removeAllFeatures();
+				map.removeLayer(vectorPointNavigation);
+			}
+			
+			if(dimInfo == dimPos){
+				//Ciclo gli elementi per la creazione delle features da aggiungere all'array
+				for(var i=0; i<dimInfo; i++){
+					var posInfo 		= routePos[i];
+					var y 				= posInfo.split(" ")[0];
+					var x 				= posInfo.split(" ")[1];
+					var point 			= new OpenLayers.Geometry.Point(x, y).transform( new OpenLayers.Projection("EPSG:4326"), map.getProjectionObject());
+					var attributes 		= {name: "routePoint",foo: routeInfo[i]};
+					//Definizione della featurer
+					features[i] = new OpenLayers.Feature.Vector(
+    						point, 
+    						attributes,{
+    							externalGraphic: '../resources/img/routeInfo.png', 
+    							graphicHeight: 11, 
+    							graphicWidth: 11}
+     						);
+				}
+			}else{
+				alert("ERRORE: Impossibile calcore i punti intermedi del percorso!");
+				return;
+			}
+		    
+		 // create the layer with listeners to create and destroy popups
+		    vectorPointNavigation = new OpenLayers.Layer.Vector("Points Navigation",{
+		        eventListeners:{
+		            'featureselected':function(evt){
+		                var feature = evt.feature;
+		                var popup = new OpenLayers.Popup.FramedCloud("popup",
+		                    OpenLayers.LonLat.fromString(feature.geometry.toShortString()),
+		                    null,
+		                    "<div style='font-size:.8em'><div style='color: #15428b;'><img src='../resources/img/infoTravel.png'/><b> Navigation Info</b></div><hr><br><div style='padding: 5px; color: #5a7dac;'><b>" +feature.attributes.foo+"</b></div>",
+		                    null,
+		                    true
+		                );
+		                popup.setBorder("2px");
+		                feature.popup = popup;
+		                map.addPopup(popup);
+		            },
+		            'featureunselected':function(evt){
+		                var feature = evt.feature;
+		                map.removePopup(feature.popup);
+		                feature.popup.destroy();
+		                feature.popup = null;
+		            }
+		        }
+		    });
+		    
+			vectorPointNavigation.addFeatures(features);
+		    
+		 	// create the select feature control
+		    var selector = new OpenLayers.Control.SelectFeature([vectorPointNavigation, vertorHandlerPoint],{
+		        hover:true,
+		        autoActivate:true,
+		        onSelect: function(feature){
+		        	if(feature.fid == "viaPoint"){
+// 		        		alert(feature.fid);
+		        		selectedFeature = feature;
+	    				if(popupSelection == null){
+	    					popupSelection = new OpenLayers.Popup.FramedCloud("chicken", 
+		    	                                     feature.geometry.getBounds().getCenterLonLat(),
+		    	                                     new OpenLayers.Size(100,300),
+		    	                                     "<div style='color: #15428b;'><img src='../resources/img/navigation.png'/><b> Action on Feature </b></div><hr><br><IMG SRC='../resources/img/deleteVia.png' ALIGN='absmiddle'><a href='#' onclick='removeViaPoint("+feature.attributes.index+");'>Remove Via Point</a>",
+		    	                                     null, true);
+		    	            feature.popup = popupSelection;
+		    	            map.addPopup(popupSelection);
+	    				}else{
+	    					popupSelection.destroy();
+	    					popupSelection = new OpenLayers.Popup.FramedCloud("chicken", 
+                                    feature.geometry.getBounds().getCenterLonLat(),
+                                    new OpenLayers.Size(100,300),
+                                    "<div style='color: #15428b;'><img src='../resources/img/navigation.png'/><b> Action on Feature </b></div><hr><br><IMG SRC='../resources/img/deleteVia.png' ALIGN='absmiddle'><a href='#' onclick='removeViaPoint("+feature.attributes.index+");'>Remove Via Point</a>",
+                                    null, true);
+			   	            feature.popup = popupSelection;
+			   	            map.addPopup(popupSelection);
+	    				}
+		        	}
+		        }
+		    });
+
+		 	map.addLayer(vectorPointNavigation);
+		 	map.addControl(selector);
+		    
+		}
+		
+		function handlerRouteControl(rVector, feature, navInfo){
+			alert(navInfo);
+			var controls = new Array();
+			var lonInit = null;
+			var latInit = null;
+			var pointInit = null;
+			var pointStart = null;
+				 drag = new OpenLayers.Control.DragFeature(rVector, {
+			        autoActivate: true,
+			        onStart: function(navInfo) {
+			        	alert(navInfo);
+			        }
+			    });
+			 	controls.push(drag);
+				map.addControls(controls);
+		}
 		/**
 		*	Funzione di Ricalcolo del Percorso al momento del DRAG dei punti (Start , VIa , End)
 		**/

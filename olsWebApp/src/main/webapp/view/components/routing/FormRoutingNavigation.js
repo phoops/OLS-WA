@@ -164,11 +164,11 @@ RNGEO.RoutinNavigationForm = Ext.extend(Ext.form.FormPanel, {
 			            			{
 			            			    switch (xmlhttp.status)
 			            			    {
-			            			    case 200: // Do the Do
-			            			    	
+			            			    case 200: 
 			            			    	xml = xmlhttp.responseXML;
 			            			    	createMultiLineString(xml);
 			            			    	
+//			            			    	alert(xmlhttp.responseText);
 			            			    	var streetDataNavArray = toArrayDataNavigation(xml);
 			            			    	if(streetDataNavArray.length == 0){
 			            			    		Ext.MessageBox.alert('Error', 'No Novigation Found!');
@@ -431,8 +431,11 @@ function createMultiLineString(xml){
 }
 
 function toArrayDataNavigation(xml){
-	arraDataObjNav = [];
-	var instruction = "";
+	//Informazioni di navigazione
+	arraDataObjNav 		= [];
+	arrayRouteInfo 		= [];
+	arrayRoutePos  		= [];
+	var instruction 	= "";
 	
 	routeInstructionsList = routeGeo = xml.getElementsByTagNameNS(namespace, "RouteInstructionsList");
 	for(var i=0; i<routeInstructionsList.length; i++){
@@ -443,8 +446,30 @@ function toArrayDataNavigation(xml){
 			instructionNode = item2.getElementsByTagNameNS(namespace, "Instruction");
 				instruction = instructionNode.item(0).firstChild.nodeValue;;
 				arraDataObjNav.push([instruction]);
+			instructionGeom = item2.getElementsByTagNameNS(namespace, "RouteInstructionGeometry");
+			item3 = instructionGeom.item(0);
+			lineString = item3.getElementsByTagNameNS(namespace2, "LineString");
+			
+			for(var k=0; k<lineString.length; k++){
+				itemLine= lineString.item(k);
+				posInfoPoint = itemLine.getElementsByTagNameNS(namespace2, "pos");
+				infoPointRoute = posInfoPoint.item(0).firstChild.nodeValue;
+				var pos = infoPointRoute;
+				var navigationInfo = instruction;
+				arrayRouteInfo.push(navigationInfo);
+				arrayRoutePos.push(pos);
+			}
 		}
 	}
+	
+	//Defnizione dell'evento per la visualizzazione su mappa delle 
+	//features relative alle indicazioni stradali delle svolte
+    var evt = document.createEvent("Event");
+    evt.initEvent("geoNavigationInfoEvent",true,true);
+    evt.navigationInfo = arrayRouteInfo;
+    evt.pos = arrayRoutePos;
+    document.dispatchEvent(evt);
+    
 	return arraDataObjNav;
 }
 
