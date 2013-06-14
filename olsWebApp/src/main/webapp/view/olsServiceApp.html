@@ -896,10 +896,10 @@
 					vertorHandlerPoint.getFeaturesByAttribute('index',i)[0].attributes.index = arrayFeatureAll[i].attributes.index -1;  
 				}
 			}
-			
+			formRN.recalculateNavigation();
 			formReverse.removeViaPoint(index);
 			popupSelection.hide();
-			formRN.recalculateNavigation();
+// 			formRN.recalculateNavigation();
         }
 		
 		//-----------------------------------------

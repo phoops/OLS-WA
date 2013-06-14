@@ -46,6 +46,7 @@ DRAGVP.DragListViaPoint = Ext.extend(Ext.grid.GridPanel, {
                                    icon   : '../resources/img/trash_02.png',  // Use a URL in the icon config
                                    tooltip: 'Delete Via Point',
                                    handler: function(grid, rowIndex, colIndex) {
+//                                     //Create the event for Remove Via Point
                                        var evt = document.createEvent("Event");
                                        evt.initEvent("removeViaPointEvent",true,true);
                                        evt.rowIndex = rowIndex+1;
