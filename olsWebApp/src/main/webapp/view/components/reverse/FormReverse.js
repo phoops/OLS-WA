@@ -3,6 +3,7 @@ var host = document.location.host;
 var namespace = 'http://www.opengis.net/xls';
 var namespace2 = 'http://www.opengis.net/gml';
 RGEO.ReverseGeoroutingForm = Ext.extend(Ext.form.FormPanel, {
+	id: 'reverseID',
 	collapsible: true,
 	initComponent:function() {
 		var config = {
@@ -46,6 +47,19 @@ RGEO.ReverseGeoroutingForm = Ext.extend(Ext.form.FormPanel, {
 		return host;
 	}
 	
+	,getStreetList:function(){
+		return stretList;
+	}
+	
+	,setStreetList:function(newList){
+		return stretList = newList;
+	}
+	
+	,removeViaPoint:function(index){
+		var streetDataVia = updateArrayVP(index);
+		Ext.getCmp('viaPointList').handler(streetDataVia);
+	}
+	
 	//Si occupa di richiamare il servizio di Reverse Geocoding
 	,callService:function(lat, lon, hostName, typeCall){
 		document.body.style.cursor = "wait";
@@ -80,12 +94,16 @@ RGEO.ReverseGeoroutingForm = Ext.extend(Ext.form.FormPanel, {
 			    	
 			    	xml = xmlhttp.responseXML;
 			    	var streetsData  = toArrayDataReverse(xml);
+			    	var streetDataVia = toArrayDataReverseViaPoint(xml);
 			    	if(typeCall == 'reverse')
 			    		Ext.getCmp('streesList').handler(streetsData);
 			    	else if(typeCall == 'reverseStart')
 			    		Ext.getCmp('startPoint').handler(streetsData);
 			    	else if(typeCall == 'reverseEnd')
 			    		Ext.getCmp('endPoint').handler(streetsData);
+			    	else if(typeCall == 'reverseViaPoint'){
+			    		Ext.getCmp('viaPointList').handler(streetDataVia);
+			    	}
 			    	
 			    	document.body.style.cursor = "default";
 			    	
@@ -162,3 +180,62 @@ function toArrayDataReverse(xml){
 	}
 	return arraDataObj;
 }
+
+var index = 0;
+var stretList = [];
+function toArrayDataReverseViaPoint(xml){
+	var formRN = Ext.getCmp("routingID");
+	var arrayViaPoints = formRN.getViaPoints();
+	var arraDataObj = [];
+	
+	var streetName = "";
+	nodeAddress = xml.getElementsByTagNameNS(namespace, "ReverseGeocodedLocation");
+	for(var i=0; i<1; i++){
+		var item = nodeAddress.item(i);
+		
+		if(item.getElementsByTagNameNS(namespace, "Street").item(0) != null){
+			streetName = item.getElementsByTagNameNS(namespace, "Street").item(0).firstChild.nodeValue;
+		}
+	}
+	
+	stretList.push(streetName);
+	
+	if(arrayViaPoints.length == stretList.length){
+		for(var i=0; i<arrayViaPoints.length; i++){
+			arraDataObj.push(
+					[i,stretList[i]]
+			);
+		}
+	}else{
+		for(var i=0; i<arrayViaPoints.length; i++){
+			arraDataObj.push(
+					[i,stretList[i+1]]
+			);
+		}
+	}
+	
+	return arraDataObj;
+}
+
+function updateArrayVP(index){
+	var formRN = Ext.getCmp("routingID");
+	var arrayViaPoints = formRN.getViaPoints();
+	var arraDataObj = [];
+	
+	if(stretList.length == arrayViaPoints.length){
+		for(var i=0; i<arrayViaPoints.length; i++){
+			arraDataObj.push([i,stretList[i]]);
+		}
+	}else{
+		for(var i=0; i<arrayViaPoints.length; i++){
+			arraDataObj.push([i,stretList[i+1]]);
+		}
+	}
+	
+	if(arrayViaPoints.length == 0){
+		stretList = [];
+	}
+	
+	return arraDataObj;
+}
+

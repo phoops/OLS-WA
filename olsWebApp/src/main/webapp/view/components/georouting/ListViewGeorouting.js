@@ -7,7 +7,7 @@ GEO.ListGeoroutingForm = Ext.extend(Ext.grid.GridPanel, {
             	stripeRows: true,
 //                autoExpandColumn: 'street',
 //            	width: '78%',
-            	width: '100%',
+            	width: '70%',
                 height: 200,
                 title: 'Open LS Results',
                 // config options for stateful behavior
@@ -42,19 +42,19 @@ GEO.ListGeoroutingForm = Ext.extend(Ext.grid.GridPanel, {
                                   {
                                       id       :'street',
                                       header   : 'Street Name',
-                                      width    : 300,
+                                      width    : 200,
                                       sortable : true,
                                       dataIndex: 'street'
                                   },
                                   {
                                       header   : 'Place',
-                                      width    : 180,
+                                      width    : 140,
                                       sortable : true,
                                       dataIndex: 'place'
                                   },
                                   {
                                       header   : 'Postal Code',
-                                      width    : 90,
+                                      width    : 40,
                                       sortable : true,
                                       dataIndex: 'postalcode'
                                   },

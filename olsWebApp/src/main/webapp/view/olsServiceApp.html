@@ -34,6 +34,8 @@
 <!-- extensions Routing Navigation -->
 <script type="text/javascript" src="components/routing/FormRoutingNavigation.js"></script>
 <script type="text/javascript" src="components/routing/ListNavigationDirection.js"></script>
+<!-- extensions Drag List Via Point -->
+<script type="text/javascript" src="components/routing/DragViaPoint.js"></script>
 
 </head>
 <!-- page specific http://vmap0.tiles.osgeo.org/wms/vmap0-->
@@ -283,6 +285,12 @@
     		var listRN = new RNGEO.ListNavigationDirection();
     		listRN.render(document.body);
     		
+    		//----------------------------------
+    		//Lista dei Via Point - Destinazioni
+    		//----------------------------------
+    		var listViaPoint = new DRAGVP.DragListViaPoint();
+    		listViaPoint.render(document.body);
+    		
     		//-----------------------
     		//Lista dei Risulatti GEO
     		//-----------------------
@@ -412,6 +420,11 @@
 			
 			var location = new OpenLayers.LonLat(lon,lat).transform(new OpenLayers.Projection("EPSG:4326"), new OpenLayers.Projection("EPSG:900913"));
 			var locationPoint = new OpenLayers.LonLat(location.lon,location.lat).transform(new OpenLayers.Projection("EPSG:900913"), new OpenLayers.Projection("EPSG:4326"));
+			
+			//Call Reverse Geocoding
+        	formReverse.getForm().findField('lat').setValue(locationPoint.lat);
+            formReverse.getForm().findField('lon').setValue(locationPoint.lon);
+            formReverse.callService(locationPoint.lat, locationPoint.lon, document.location.host + ":" + document.location.port, 'reverseViaPoint');
 		    
 		    
 			var point = new OpenLayers.Geometry.Point(lon, lat).transform(new OpenLayers.Projection("EPSG:4326"), new OpenLayers.Projection("EPSG:900913"));
@@ -428,7 +441,7 @@
 		    vertorHandlerPoint.addFeatures(viaFeature);
 		    
 		  	
-		    selectControl = new OpenLayers.Control.SelectFeature(vertorHandlerPoint,
+		    selectControl = new OpenLayers.Control.SelectFeature([vertorHandlerPoint, vectorPointNavigation],
 	                {	autoActivate: true,
 		    			onSelect: function(feature){
 							if(feature.fid == "viaPoint"){
@@ -510,6 +523,10 @@
         	formRN = Ext.getCmp("routingID");
         	
         	var location = new OpenLayers.LonLat(lon,lat).transform(new OpenLayers.Projection("EPSG:900913"), new OpenLayers.Projection("EPSG:4326"));
+        	//Call Reverse Geocoding
+        	formReverse.getForm().findField('lat').setValue(location.lat);
+            formReverse.getForm().findField('lon').setValue(location.lon);
+            formReverse.callService(location.lat, location.lon, document.location.host + ":" + document.location.port, 'reverseViaPoint');
         	
  		    var point = new OpenLayers.Geometry.Point(lon, lat).transform( new OpenLayers.Projection("EPSG:900913"), map.getProjectionObject());
  		    indexVia += 1;
@@ -880,9 +897,20 @@
 				}
 			}
 			
+			formReverse.removeViaPoint(index);
 			popupSelection.hide();
 			formRN.recalculateNavigation();
         }
+		
+		//-----------------------------------------
+		//Dispacher dell'evento removeViaPointEvent
+		//-----------------------------------------
+		document.addEventListener("removeViaPointEvent",handlerRemoveViaPoint,false);
+		
+		function handlerRemoveViaPoint(event){
+			var index = event.rowIndex;
+			removeViaPoint(index);
+		}
 		
 		//---------------------------------------------
 		//Dispacher dell'evento Upadate index via Point

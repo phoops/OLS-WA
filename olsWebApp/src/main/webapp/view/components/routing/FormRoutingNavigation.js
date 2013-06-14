@@ -247,6 +247,10 @@ RNGEO.RoutinNavigationForm = Ext.extend(Ext.form.FormPanel, {
 		viaPoints.push(vPoint);
 	}
 	
+	,getViaPoints:function(){
+		return viaPoints;
+	}
+	
 	,updateViaPoint:function(index, location){
 		for(var i=0; i<viaPoints.length; i++){
 			if(i == (index-1)){
@@ -256,10 +260,18 @@ RNGEO.RoutinNavigationForm = Ext.extend(Ext.form.FormPanel, {
 	}
 	
 	,removeViaPoint:function(index){
+		var formR = Ext.getCmp("reverseID");
+		var streets = [];
+		var streetListR = formR.getStreetList();
+		for(var i=0; i<streetListR.length; i++){
+			streets.push(streetListR[i]);
+		}
 		if(viaPoints.length == 1){
 			viaPoints = [];
 		}else{
 			viaPoints.splice(index-1,1);
+			streets.splice(index-1,1);
+			formR.setStreetList(streets);
 		}
 		var evt = document.createEvent("Event");
 	    evt.initEvent("indexViaUpdateEvent",true,true);
