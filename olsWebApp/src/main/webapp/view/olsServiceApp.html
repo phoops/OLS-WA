@@ -68,6 +68,7 @@
       	var dragLine 				= null;
       	var selectControl			= null;
       	var indexToDelete			= 0;
+      	var indexFeatures		 	= [];
       	//--------------------------------------
       	// Get control of the right-click event:
 		//--------------------------------------
@@ -143,7 +144,7 @@
 		                          	+"<IMG SRC='../resources/img/sta.png' ALIGN='absmiddle'> Start from here</a><br>"+
 		                          	
 		                          	"<a href='#' onclick='addEndMarker("+lonlat.lon+","+lonlat.lat+");'>"
-		                          	+"<IMG SRC='../resources/img/fin.png' ALIGN='absmiddle'> End to here</a><br>"+
+		                          	+"<IMG SRC='../resources/img/fin.png' ALIGN='absmiddle'> End to here</a><br><br>"+
 		                          	
 		                          	"<a href='#' onclick='addViaMarker("+lonlat.lon+","+lonlat.lat+");'>"
 		                          	+"<IMG SRC='../resources/img/via.png' ALIGN='absmiddle'> Stop Here</a>"
@@ -164,7 +165,7 @@
 	                          	+"<IMG SRC='../resources/img/sta.png' ALIGN='absmiddle'> Start from here</a><br>"+
 	                          	
 	                          	"<a href='#' onclick='addEndMarker("+lonlat.lon+","+lonlat.lat+");'>"
-	                          	+"<IMG SRC='../resources/img/fin.png' ALIGN='absmiddle'> End to here</a><br>"+
+	                          	+"<IMG SRC='../resources/img/fin.png' ALIGN='absmiddle'> End to here</a><br><br>"+
 	                          	
 	                          	"<a href='#' onclick='addViaMarker("+lonlat.lon+","+lonlat.lat+");'>"
 	                          	+"<IMG SRC='../resources/img/via.png' ALIGN='absmiddle'> Stop Here</a>"
@@ -309,9 +310,7 @@
 				markers.clearMarkers();
 // 				var location = new OpenLayers.LonLat(lon,lat);
 				var location = new OpenLayers.LonLat(lon,lat);
-// 				alert(location.lon +" / "+location.lat);
 				location.transform(new OpenLayers.Projection("EPSG:4326"), new OpenLayers.Projection("EPSG:900913"));
-// 				alert(location.lon +" / "+location.lat);
 				
 				var size = new OpenLayers.Size(21,25);
 			    var offset = new OpenLayers.Pixel(-(size.w/2), -size.h);
@@ -450,7 +449,7 @@
 			    					popupSelection = new OpenLayers.Popup.FramedCloud("chicken", 
 				    	                                     feature.geometry.getBounds().getCenterLonLat(),
 				    	                                     new OpenLayers.Size(100,300),
-				    	                                     "<div style='font-size:.8em'><b>Action on Feature</b><br><IMG SRC='../resources/img/deleteVia.png' ALIGN='absmiddle'><a href='#' onclick='removeViaPoint("+feature.attributes.index+");'>Remove Via Point</a></div>",
+				    	                                     "<div style='font-size:.8em'><b>Action on Feature</b><br><IMG SRC='../resources/img/deleteVia.png' ALIGN='absmiddle'><a href='#' onclick='removeViaPoint("+feature.attributes.index+","+false+");'>Remove Via Point</a></div>",
 				    	                                     null, true);
 				    	            feature.popup = popupSelection;
 				    	            map.addPopup(popupSelection);
@@ -459,7 +458,7 @@
 			    					popupSelection = new OpenLayers.Popup.FramedCloud("chicken", 
    	                                     feature.geometry.getBounds().getCenterLonLat(),
    	                                     new OpenLayers.Size(100,300),
-   	                                     "<div style='font-size:.8em'><b>Action on Feature</b><br><IMG SRC='../resources/img/deleteVia.png' ALIGN='absmiddle'><a href='#' onclick='removeViaPoint("+feature.attributes.index+");'>Remove Via Point</a></div>",
+   	                                     "<div style='font-size:.8em'><b>Action on Feature</b><br><IMG SRC='../resources/img/deleteVia.png' ALIGN='absmiddle'><a href='#' onclick='removeViaPoint("+feature.attributes.index+","+false+");'>Remove Via Point</a></div>",
    	                                     null, true);
 					   	            feature.popup = popupSelection;
 					   	            map.addPopup(popupSelection);
@@ -550,7 +549,7 @@
 			    					popupSelection = new OpenLayers.Popup.FramedCloud("chicken", 
 				    	                                     feature.geometry.getBounds().getCenterLonLat(),
 				    	                                     new OpenLayers.Size(100,300),
-				    	                                     "<div style='color: #15428b;'><img src='../resources/img/navigation.png'/><b> Action on Feature </b></div><hr><br><IMG SRC='../resources/img/deleteVia.png' ALIGN='absmiddle'><a href='#' onclick='removeViaPoint("+feature.attributes.index+");'>Remove Via Point</a></div>",
+				    	                                     "<div style='color: #15428b;'><img src='../resources/img/navigation.png'/><b> Action on Feature </b></div><hr><br><IMG SRC='../resources/img/deleteVia.png' ALIGN='absmiddle'><a href='#' onclick='removeViaPoint("+feature.attributes.index+","+false+");'>Remove Via Point</a></div>",
 				    	                                     null, true);
 				    	            feature.popup = popupSelection;
 				    	            map.addPopup(popupSelection);
@@ -559,7 +558,7 @@
 			    					popupSelection = new OpenLayers.Popup.FramedCloud("chicken", 
    	                                     feature.geometry.getBounds().getCenterLonLat(),
    	                                     new OpenLayers.Size(100,300),
-   	                                  "<div style='color: #15428b;'><img src='../resources/img/navigation.png'/><b> Action on Feature </b></div><hr><br><IMG SRC='../resources/img/deleteVia.png' ALIGN='absmiddle'><a href='#' onclick='removeViaPoint("+feature.attributes.index+");'>Remove Via Point</a></div>",
+   	                                  "<div style='color: #15428b;'><img src='../resources/img/navigation.png'/><b> Action on Feature </b></div><hr><br><IMG SRC='../resources/img/deleteVia.png' ALIGN='absmiddle'><a href='#' onclick='removeViaPoint("+feature.attributes.index+","+false+");'>Remove Via Point</a></div>",
    	                                     null, true);
 					   	            feature.popup = popupSelection;
 					   	            map.addPopup(popupSelection);
@@ -753,7 +752,7 @@
 	    					popupSelection = new OpenLayers.Popup.FramedCloud("chicken", 
 		    	                                     feature.geometry.getBounds().getCenterLonLat(),
 		    	                                     new OpenLayers.Size(100,300),
-		    	                                     "<div style='color: #15428b;'><img src='../resources/img/navigation.png'/><b> Action on Feature </b></div><hr><br><IMG SRC='../resources/img/deleteVia.png' ALIGN='absmiddle'><a href='#' onclick='removeViaPoint("+feature.attributes.index+");'>Remove Via Point</a>",
+		    	                                     "<div style='color: #15428b;'><img src='../resources/img/navigation.png'/><b> Action on Feature </b></div><hr><br><IMG SRC='../resources/img/deleteVia.png' ALIGN='absmiddle'><a href='#' onclick='removeViaPoint("+feature.attributes.index+","+false+");'>Remove Via Point</a>",
 		    	                                     null, true);
 		    	            feature.popup = popupSelection;
 		    	            map.addPopup(popupSelection);
@@ -762,7 +761,7 @@
 	    					popupSelection = new OpenLayers.Popup.FramedCloud("chicken", 
                                     feature.geometry.getBounds().getCenterLonLat(),
                                     new OpenLayers.Size(100,300),
-                                    "<div style='color: #15428b;'><img src='../resources/img/navigation.png'/><b> Action on Feature </b></div><hr><br><IMG SRC='../resources/img/deleteVia.png' ALIGN='absmiddle'><a href='#' onclick='removeViaPoint("+feature.attributes.index+");'>Remove Via Point</a>",
+                                    "<div style='color: #15428b;'><img src='../resources/img/navigation.png'/><b> Action on Feature </b></div><hr><br><IMG SRC='../resources/img/deleteVia.png' ALIGN='absmiddle'><a href='#' onclick='removeViaPoint("+feature.attributes.index+","+false+");'>Remove Via Point</a>",
                                     null, true);
 			   	            feature.popup = popupSelection;
 			   	            map.addPopup(popupSelection);
@@ -830,6 +829,9 @@
 							formRN.recalculateNavigation();
 						}
 						if(feature.fid != null && feature.fid.toString() == "viaPoint"){
+							indexF = feature.attributes.index;
+							formReverse.setIndexFeature(indexF);
+							formReverse.callService(location.lat, location.lon, document.location.host + ":" + document.location.port, 'reverseViaPoint_drag');
 							formRN.updateViaPoint(feature.attributes.index, location);	
 							formRN.recalculateNavigation();
 						}
@@ -857,7 +859,7 @@
 				    					popupSelection = new OpenLayers.Popup.FramedCloud("chicken", 
 					    	                                     feature.geometry.getBounds().getCenterLonLat(),
 					    	                                     new OpenLayers.Size(100,300),
-					    	                                     "<div style='font-size:.8em'><b>Action on Feature</b><br><IMG SRC='../resources/img/deleteVia.png' ALIGN='absmiddle'><a href='#' onclick='removeViaPoint("+feature.attributes.index+");'>Remove Via Point</a></div>",
+					    	                                     "<div style='font-size:.8em'><b>Action on Feature</b><br><IMG SRC='../resources/img/deleteVia.png' ALIGN='absmiddle'><a href='#' onclick='removeViaPoint("+feature.attributes.index+","+false+");'>Remove Via Point</a></div>",
 					    	                                     null, true);
 					    	            feature.popup = popupSelection;
 					    	            map.addPopup(popupSelection);
@@ -866,7 +868,7 @@
 				    					popupSelection = new OpenLayers.Popup.FramedCloud("chicken", 
 	   	                                     feature.geometry.getBounds().getCenterLonLat(),
 	   	                                     new OpenLayers.Size(100,300),
-	   	                                     "<div style='font-size:.8em'><b>Action on Feature</b><br><IMG SRC='../resources/img/deleteVia.png' ALIGN='absmiddle'><a href='#' onclick='removeViaPoint("+feature.attributes.index+");'>Remove Via Point</a></div>",
+	   	                                     "<div style='font-size:.8em'><b>Action on Feature</b><br><IMG SRC='../resources/img/deleteVia.png' ALIGN='absmiddle'><a href='#' onclick='removeViaPoint("+feature.attributes.index+","+false+");'>Remove Via Point</a></div>",
 	   	                                     null, true);
 						   	            feature.popup = popupSelection;
 						   	            map.addPopup(popupSelection);
@@ -880,26 +882,79 @@
 			}
 		}
 		
+		
+		//-----------------------------------------
+		//Dispacher dell'evento updateFeaturesEvent
+		//-----------------------------------------
+		document.addEventListener("updateFeaturesEvent",handlerUpdateFeatures,false);
+		
+		/**
+		* Function, si occupa di aggiornare i marker delle tappe presenti su mappa
+		**/
+		function handlerUpdateFeatures(event){
+			indexFeatures = event.aIndex;
+			var newIndexFeatures = [];
+			for (var i=0; i<indexFeatures.length; i++){
+				newIndexFeatures.push(parseInt(indexFeatures[i]) +1);
+			}
+			
+			var index = 0;
+			var arrayFeatureAll = vertorHandlerPoint.features;
+			var arrayTempFeatureOld = [];
+			var arrayTempFeatureNew = [];
+			for(var j=0; j<arrayFeatureAll.length; j++){
+				if(arrayFeatureAll[j].fid == 'viaPoint'){
+					var tempFeature = arrayFeatureAll[j];
+					arrayTempFeatureOld.push(tempFeature);
+					tempFeature.attributes.index = newIndexFeatures[index];
+					arrayTempFeatureNew.push(tempFeature);
+					index++;
+				}
+			}
+			for(var j=0; j<arrayTempFeatureOld.length; j++){
+				vertorHandlerPoint.removeFeatures(arrayTempFeatureOld[j]);
+			}
+			for(var j=0; j<arrayTempFeatureNew.length; j++){
+				vertorHandlerPoint.addFeatures(arrayTempFeatureNew[j]);
+			}
+		}
+		
+		
 		/**
 		/* Funzione per la rimozione del viaPoint e conseguente ricalcolo del percorso
 		**/
-		function removeViaPoint(index) {
+		function removeViaPoint(index, isFromList) {
+			deleteIndex = null;
+			for(var i=0; i<indexFeatures.length; i++){
+				if(indexFeatures[i] == index){
+					deleteIndex = i;
+					break;
+				}
+			}
 			formRN = Ext.getCmp("routingID");
-			formRN.removeViaPoint(index);
+			if(deleteIndex == null || !isFromList){
+				formRN.removeViaPointOrigin(index);
+			}
+			else{
+				formRN.removeViaPoint(deleteIndex);
+			}
 			vertorHandlerPoint.removeFeatures(vertorHandlerPoint.getFeaturesByAttribute('index',index));
 			
 			var arrayFeatureAll = vertorHandlerPoint.features;
 			for(var i=0; i<arrayFeatureAll.length; i++){
 				if(arrayFeatureAll[i].fid == 'viaPoint'
 						&& arrayFeatureAll[i].attributes.index > indexToDelete){
-					var featureTuUpdate = vertorHandlerPoint.getFeaturesByAttribute('index',i);					
-					vertorHandlerPoint.getFeaturesByAttribute('index',i)[0].attributes.index = arrayFeatureAll[i].attributes.index -1;  
+					var featureToUpdate = arrayFeatureAll[i];
+					vertorHandlerPoint.removeFeatures(featureToUpdate);
+					featureToUpdate.attributes.index = parseInt(featureToUpdate.attributes.index)-1;
+					vertorHandlerPoint.addFeatures(featureToUpdate);
+					vertorHandlerPoint.addFeatures(featureToUpdate);
+// 					(vertorHandlerPoint.getFeaturesByAttribute('index',i)[0]).attributes.index = arrayFeatureAll[i].attributes.index -1;  
 				}
 			}
+			formReverse.updateDataList();
 			formRN.recalculateNavigation();
-			formReverse.removeViaPoint(index);
 			popupSelection.hide();
-// 			formRN.recalculateNavigation();
         }
 		
 		//-----------------------------------------
@@ -909,7 +964,7 @@
 		
 		function handlerRemoveViaPoint(event){
 			var index = event.rowIndex;
-			removeViaPoint(index);
+			removeViaPoint(index,true);
 		}
 		
 		//---------------------------------------------
@@ -918,12 +973,21 @@
 		document.addEventListener("indexViaUpdateEvent",updateIndexVia,false);
 		
 		function updateIndexVia(event){
-			if(event.indexVia == 1){
+			if(event.indexViaUp == 1){
 				indexVia = event.indexViaUp;
-			}else{
+			}if(event.indexViaUp == 0){
+				indexVia = event.indexViaUp;
+			}
+			else{
 				indexVia = (event.indexViaUp -1);
 			}
-			indexToDelete = event.indexDeleted;
+			
+			if(event.indexDeleted == 0){
+				indexToDelete = (event.indexDeleted +1);
+			}
+			else{
+				indexToDelete = event.indexDeleted;
+			}
 		}
       </script>
 </body>

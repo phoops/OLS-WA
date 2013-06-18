@@ -2,6 +2,7 @@ Ext.ns('DRAGVP');
 var host = document.location.host;
 var startPoint = null;
 var endPoint = null;
+var moveUpNumber = [];
 var viaPoints = []; 
 var namespace = 'http://www.opengis.net/xls';
 var namespace2 = 'http://www.opengis.net/gml';
@@ -49,7 +50,11 @@ DRAGVP.DragListViaPoint = Ext.extend(Ext.grid.GridPanel, {
 //                                     //Create the event for Remove Via Point
                                        var evt = document.createEvent("Event");
                                        evt.initEvent("removeViaPointEvent",true,true);
-                                       evt.rowIndex = rowIndex+1;
+                                       if(moveUpNumber.length == 0){
+                                    	   evt.rowIndex = parseInt(rowIndex)+1;
+                                       }else{
+                                    	   evt.rowIndex = parseInt(moveUpNumber[rowIndex]);
+                                       }
                                        document.dispatchEvent(evt);
                                    }
                                }]
@@ -60,16 +65,27 @@ DRAGVP.DragListViaPoint = Ext.extend(Ext.grid.GridPanel, {
                                items: [{
                                    icon   : '../resources/img/top.png',  // Use a URL in the icon config
                                    tooltip: 'Movo Up Via Point',
-                                   handler: function() {
-                                	   	 alert("Move Up Via Point");
-//                                       var rec = store.getAt(rowIndex);
-//                                       Ext.getCmp('routingID').getForm().findField('startPoint').setValue(rec.get('street'));
-//                                       position = rec.get('pos');
-//                                       //Create the event for Start Point
-//                                       var evt = document.createEvent("Event");
-//                                       evt.initEvent("startPointEvent",true,true);
-//                                       evt.pos = position;
-//                                       document.dispatchEvent(evt);
+                                   handler: function(grid, rowIndex, colIndex){
+                                	   var formR = Ext.getCmp("reverseID");
+                                	   var formRN = Ext.getCmp("routingID");
+                                	   dList = formR.getListDrag(); 
+                                	   
+                                	   	 if(dList.length == 1 || rowIndex == 0){
+                                	   		 //Do nothung
+                                	   		 return;
+                                	   	 }else{
+                                	   		 dList = orderingUp(dList,rowIndex);
+                                	   		 formR.setListDrag(dList);
+                                	   		 var arrayViaPoints = formRN.getViaPoints();
+                                	   		 arrayViaPoints = orderingUp(arrayViaPoints,rowIndex);
+                                	   		 formRN.setViaPoints(arrayViaPoints);
+                                	   		 
+                                	   		 updateIndex(dList,arrayViaPoints);
+                                	   		 var streetList = formR.getStreetList();
+                                	   		 streetList = orderingUp(streetList,rowIndex);
+                                	   		 formR.setStreetList(streetList);
+                                	   		 formRN.recalculateNavigation();
+                                	   	 }
                                    }
                                }]
                            },
@@ -108,6 +124,47 @@ var storeVia = new Ext.data.ArrayStore({
        {name: 'stopAt'}
     ]
 });
+
+function orderingUp(dList,rowIndex){
+	var tempList = [];
+	var temp;
+	for(var i=0; i<dList.length; i++){
+		if(i == rowIndex-1){
+			temp = dList[i];
+			tempList[i] = dList[rowIndex]; 
+		}else if(i == rowIndex){
+			tempList[i] = temp;
+		}else{
+			tempList[i] = dList[i];
+		}
+	}
+	
+	return tempList;
+}
+
+function updateIndex(dList,arrayViaPoints){
+	var arraDataObj = [];
+	var arrayIndex 	= [];
+	for(var i=0; i<arrayViaPoints.length; i++){
+		var streetName = dList[i].toString();
+		arraDataObj.push([i,streetName.split(",")[1]]);
+		arrayIndex.push(dList[i].toString().split(",")[0]);
+	}
+	
+	Ext.getCmp('viaPointList').handler(arraDataObj);
+	
+//	for(var i=0; i<arrayIndex.length; i++){
+//		alert(arrayIndex[i]);
+//	}
+	
+	//Lancia un evento per l'aggiornamento delle feature presenti su mappa
+	var evt = document.createEvent("Event");
+    evt.initEvent("updateFeaturesEvent",true,true);
+    evt.aIndex = arrayIndex;
+    moveUpNumber = arrayIndex;
+    document.dispatchEvent(evt);
+}
+
 //manually load local data
 storeVia.loadData();
 

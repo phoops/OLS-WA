@@ -2,6 +2,7 @@ Ext.ns('RGEO');
 var host = document.location.host;
 var namespace = 'http://www.opengis.net/xls';
 var namespace2 = 'http://www.opengis.net/gml';
+var indexFeature = null;
 RGEO.ReverseGeoroutingForm = Ext.extend(Ext.form.FormPanel, {
 	id: 'reverseID',
 	collapsible: true,
@@ -55,9 +56,30 @@ RGEO.ReverseGeoroutingForm = Ext.extend(Ext.form.FormPanel, {
 		return stretList = newList;
 	}
 	
+	,getListDrag:function(){
+		return listDrag;
+	}
+	
+	,setListDrag:function(newListDrag){
+		listDrag = newListDrag;
+	}
+	
 	,removeViaPoint:function(index){
 		var streetDataVia = updateArrayVP(index);
 		Ext.getCmp('viaPointList').handler(streetDataVia);
+	}
+	
+	,updateDataList:function(){
+		tempList = [];
+		for(var i=0; i<listDrag.length-1; i++){
+			tempList.push([i,stretList[i]]);
+		}
+		listDrag = tempList;
+		Ext.getCmp('viaPointList').handler(tempList);
+	}
+	
+	,setIndexFeature:function(value){
+		indexFeature = value;
 	}
 	
 	//Si occupa di richiamare il servizio di Reverse Geocoding
@@ -94,7 +116,6 @@ RGEO.ReverseGeoroutingForm = Ext.extend(Ext.form.FormPanel, {
 			    	
 			    	xml = xmlhttp.responseXML;
 			    	var streetsData  = toArrayDataReverse(xml);
-			    	var streetDataVia = toArrayDataReverseViaPoint(xml);
 			    	if(typeCall == 'reverse')
 			    		Ext.getCmp('streesList').handler(streetsData);
 			    	else if(typeCall == 'reverseStart')
@@ -102,6 +123,10 @@ RGEO.ReverseGeoroutingForm = Ext.extend(Ext.form.FormPanel, {
 			    	else if(typeCall == 'reverseEnd')
 			    		Ext.getCmp('endPoint').handler(streetsData);
 			    	else if(typeCall == 'reverseViaPoint'){
+			    		var streetDataVia = toArrayDataReverseViaPoint(xml);
+			    		Ext.getCmp('viaPointList').handler(streetDataVia);
+			    	}else if(typeCall == 'reverseViaPoint_drag'){
+			    		var streetDataVia = toArrayDataReverseViaPointDrag(xml);
 			    		Ext.getCmp('viaPointList').handler(streetDataVia);
 			    	}
 			    	
@@ -183,37 +208,55 @@ function toArrayDataReverse(xml){
 
 var index = 0;
 var stretList = [];
+var listDrag = [];
 function toArrayDataReverseViaPoint(xml){
 	var formRN = Ext.getCmp("routingID");
 	var arrayViaPoints = formRN.getViaPoints();
 	var arraDataObj = [];
-	
 	var streetName = "";
 	nodeAddress = xml.getElementsByTagNameNS(namespace, "ReverseGeocodedLocation");
-	for(var i=0; i<1; i++){
-		var item = nodeAddress.item(i);
-		
-		if(item.getElementsByTagNameNS(namespace, "Street").item(0) != null){
-			streetName = item.getElementsByTagNameNS(namespace, "Street").item(0).firstChild.nodeValue;
+	if(arrayViaPoints.length > 0){
+		for(var i=0; i<1; i++){
+			var item = nodeAddress.item(i);
+			
+			if(item.getElementsByTagNameNS(namespace, "Street").item(0) != null){
+				streetName = item.getElementsByTagNameNS(namespace, "Street").item(0).firstChild.nodeValue;
+			}
 		}
+		stretList.push(streetName);
 	}
 	
-	stretList.push(streetName);
-	
-	if(arrayViaPoints.length == stretList.length){
-		for(var i=0; i<arrayViaPoints.length; i++){
-			arraDataObj.push(
-					[i,stretList[i]]
-			);
+	for(var i=0; i<arrayViaPoints.length; i++){
+		arraDataObj.push([i,stretList[i]]);
+	}
+	listDrag = arraDataObj;
+	return arraDataObj;
+}
+
+function toArrayDataReverseViaPointDrag(xml){
+	var formRN = Ext.getCmp("routingID");
+	var arrayViaPoints = formRN.getViaPoints();
+	var arraDataObj = [];
+	var streetName = "";
+	nodeAddress = xml.getElementsByTagNameNS(namespace, "ReverseGeocodedLocation");
+	if(arrayViaPoints.length > 0){
+		for(var i=0; i<1; i++){
+			var item = nodeAddress.item(i);
+			
+			if(item.getElementsByTagNameNS(namespace, "Street").item(0) != null){
+				streetName = item.getElementsByTagNameNS(namespace, "Street").item(0).firstChild.nodeValue;
+			}
 		}
-	}else{
-		for(var i=0; i<arrayViaPoints.length; i++){
-			arraDataObj.push(
-					[i,stretList[i+1]]
-			);
+		stretList[indexFeature-1] = streetName;
+	}
+	for(var i=0; i<arrayViaPoints.length; i++){
+		if(i == (indexFeature-1)){
+			arraDataObj.push([i,streetName]);
+		}else{
+			arraDataObj.push([i,stretList[i]]);
 		}
 	}
-	
+	listDrag = arraDataObj;
 	return arraDataObj;
 }
 
@@ -222,15 +265,10 @@ function updateArrayVP(index){
 	var arrayViaPoints = formRN.getViaPoints();
 	var arraDataObj = [];
 	
-	if(stretList.length == arrayViaPoints.length){
 		for(var i=0; i<arrayViaPoints.length; i++){
 			arraDataObj.push([i,stretList[i]]);
+//			alert(stretList[i]);
 		}
-	}else{
-		for(var i=0; i<arrayViaPoints.length; i++){
-			arraDataObj.push([i,stretList[i+1]]);
-		}
-	}
 	
 	if(arrayViaPoints.length == 0){
 		stretList = [];

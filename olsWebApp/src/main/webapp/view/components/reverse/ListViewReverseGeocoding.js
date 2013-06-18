@@ -30,7 +30,6 @@ RGEO.ListReverseGeoroutingForm = Ext.extend(Ext.form.FormPanel, {
 		                height:250,
 		        	    reserveScrollOffset: true,
 		        	    handler: function(storeData){
-		        	    	alert('sono arrivato nel handler');
 //		        	    	var storeStreets = new Ext.data.JsonStore({
 //		        	    	    data: storeData,
 //		        	    	    fields: [
@@ -102,7 +101,6 @@ RGEO.ListReverseGeoroutingForm = Ext.extend(Ext.form.FormPanel, {
 		        	                      tooltip: 'Partenza',
 		        	                      handler: function(grid, rowIndex, colIndex) {
 		        	                          var rec = store.getAt(rowIndex);
-		        	                          alert("Sell " + rec.get('pos'));
 		        	                          position = rec.get('pos');
 		        	                          
 		        	                          //Create the event for zoom
@@ -123,7 +121,6 @@ RGEO.ListReverseGeoroutingForm = Ext.extend(Ext.form.FormPanel, {
 		        	                      },
 		        	                      handler: function(grid, rowIndex, colIndex) {
 		        	                          var rec = store.getAt(rowIndex);
-//		        	                          alert("Buy " + rec.get('pos'));
 		        	                      }
 		        	                  }]
 		        	              }

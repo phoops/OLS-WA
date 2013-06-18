@@ -245,10 +245,15 @@ RNGEO.RoutinNavigationForm = Ext.extend(Ext.form.FormPanel, {
 	
 	,addToViaPoint:function(vPoint){
 		viaPoints.push(vPoint);
+//		alert(vPoint);
 	}
 	
 	,getViaPoints:function(){
 		return viaPoints;
+	}
+	
+	,setViaPoints:function(newList){
+		viaPoints = newList;
 	}
 	
 	,updateViaPoint:function(index, location){
@@ -259,26 +264,73 @@ RNGEO.RoutinNavigationForm = Ext.extend(Ext.form.FormPanel, {
 		}
 	}
 	
-	,removeViaPoint:function(index){
+	,removeViaPointOrigin:function(indexLess){
+		tempVia = [];
+		streets = [];
+		index = parseInt(indexLess) -1;
 		var formR = Ext.getCmp("reverseID");
-		var streets = [];
 		var streetListR = formR.getStreetList();
-		for(var i=0; i<streetListR.length; i++){
-			streets.push(streetListR[i]);
+		for(var i=0; i<viaPoints.length; i++){
+//			alert("XX"+viaPoints[i]);
+			if(i != (parseInt(index))){
+				tempVia.push(viaPoints[i]);
+				streets.push(streetListR[i]);
+			}
 		}
-		if(viaPoints.length == 1){
-			viaPoints = [];
-		}else{
-			viaPoints.splice(index-1,1);
-			streets.splice(index-1,1);
-			formR.setStreetList(streets);
-		}
+//		for(var i=0; i<tempVia.length; i++){
+//			alert("YY"+tempVia[i]);
+//		}
+		viaPoints = tempVia;
+		formR.setStreetList(streets);
+//		alert("AAA");
 		var evt = document.createEvent("Event");
 	    evt.initEvent("indexViaUpdateEvent",true,true);
-	    evt.indexViaUp = (viaPoints.length + 1);
-	    evt.indexDeleted = index;
+	    evt.indexViaUp = (viaPoints.length);
+	    evt.indexDeleted = indexLess;
 	    document.dispatchEvent(evt);
 	}
+	
+	,removeViaPoint:function(index){
+		tempVia = [];
+		streets = [];
+		var formR = Ext.getCmp("reverseID");
+		var streetListR = formR.getStreetList();
+		for(var i=0; i<viaPoints.length; i++){
+			if(i != (parseInt(index))){
+				tempVia.push(viaPoints[i]);
+				streets.push(streetListR[i]);
+			}
+		}
+		viaPoints = tempVia;
+		formR.setStreetList(streets);
+		var evt = document.createEvent("Event");
+	    evt.initEvent("indexViaUpdateEvent",true,true);
+	    evt.indexViaUp = (viaPoints.length);
+	    evt.indexDeleted = (index+1);
+	    document.dispatchEvent(evt);
+	}
+	
+//	,removeViaPointOrigin:function(index){
+//		alert("Remove Via Point in RN");
+//		var formR = Ext.getCmp("reverseID");
+//		var streets = [];
+//		var streetListR = formR.getStreetList();
+//		for(var i=0; i<streetListR.length; i++){
+//			streets.push(streetListR[i]);
+//		}
+//		if(viaPoints.length == 1){
+//			viaPoints = [];
+//		}else{
+//			viaPoints.splice(index-1,1);
+//			streets.splice(index-1,1);
+//			formR.setStreetList(streets);
+//		}
+//		var evt = document.createEvent("Event");
+//	    evt.initEvent("indexViaUpdateEvent",true,true);
+//	    evt.indexViaUp = (viaPoints.length + 1);
+//	    evt.indexDeleted = index;
+//	    document.dispatchEvent(evt);
+//	}
 	
 	//Funzione utilizzata per il ricalcolo del percorso
 	//dopo aver trascinato su mappa il punto iniziale / finale / intermedio
@@ -300,7 +352,6 @@ RNGEO.RoutinNavigationForm = Ext.extend(Ext.form.FormPanel, {
     		
     		var startValue = Ext.getCmp('startPoint').getValue();
     		var endValue = Ext.getCmp('endPoint').getValue();
-    		
     		var xmlVia = "";
     		for(var i=0; i<viaPoints.length; i++){
     			xmlVia += "			<ViaPoint>"
@@ -341,6 +392,7 @@ RNGEO.RoutinNavigationForm = Ext.extend(Ext.form.FormPanel, {
     					+"	</RouteMapRequest>"
     					+"</DetermineRouteRequest>";
     		//Handler POST request
+//    		alert(xml);
     		xmlhttp.open("POST", url);
     		
     		xmlhttp.onreadystatechange = function() {
