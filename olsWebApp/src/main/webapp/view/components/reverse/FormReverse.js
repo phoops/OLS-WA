@@ -63,7 +63,8 @@ RGEO.ReverseGeoroutingForm = Ext.extend(Ext.form.FormPanel, {
 	,setListDrag:function(newListDrag){
 		listDrag = newListDrag;
 	}
-	
+	//Rimuovi il viaPoint dalla lista delle tappe
+	//Aggiorna la visualizzazione delle tappe in tabell
 	,removeViaPoint:function(index){
 		var streetDataVia = updateArrayVP(index);
 		Ext.getCmp('viaPointList').handler(streetDataVia);
@@ -114,6 +115,8 @@ RGEO.ReverseGeoroutingForm = Ext.extend(Ext.form.FormPanel, {
 			    {
 			    case 200: // Do the Do
 			    	
+			    	//Questo blocco di occupa di determinare quale tipologia di chiamata è stata effettata
+			    	//Se per l'endPoint, viaPoint o altro -> richiama l'apposità funzionalità
 			    	xml = xmlhttp.responseXML;
 			    	var streetsData  = toArrayDataReverse(xml);
 			    	if(typeCall == 'reverse')
@@ -151,8 +154,11 @@ RGEO.ReverseGeoroutingForm = Ext.extend(Ext.form.FormPanel, {
 });
 Ext.reg('reversegeoroutingform', RGEO.ReverseGeoroutingForm);
 
-/*
- * Function to create ArrayData
+/**
+ * Funzione per il parsing e la creazione dei dati dalla risposta del servizio 
+ * di reverseGeocoding
+ * @param xml
+ * @returns
  */
 function toArrayDataReverse(xml){
 	arraDataObj = [];
@@ -209,6 +215,13 @@ function toArrayDataReverse(xml){
 var index = 0;
 var stretList = [];
 var listDrag = [];
+
+/**
+ * Funzione per la creazione delle tappe visualizzate
+ * all'interno dell oggetto @see DragViaPoint.js
+ * @param xml
+ * @returns {Array}
+ */
 function toArrayDataReverseViaPoint(xml){
 	var formRN = Ext.getCmp("routingID");
 	var arrayViaPoints = formRN.getViaPoints();
@@ -233,6 +246,12 @@ function toArrayDataReverseViaPoint(xml){
 	return arraDataObj;
 }
 
+/**
+ * Funzione per la creazione delle tappe visualizzate
+ * all'interno dell oggetto @see DragViaPoint.js
+ * @param xml di risposta del servizio di reverseGeocoding
+ * @returns {Array}
+ */
 function toArrayDataReverseViaPointDrag(xml){
 	var formRN = Ext.getCmp("routingID");
 	var arrayViaPoints = formRN.getViaPoints();
@@ -260,6 +279,12 @@ function toArrayDataReverseViaPointDrag(xml){
 	return arraDataObj;
 }
 
+/**
+ * Aggiorna la visualizzazione delle tappe
+ * all'interno della tabella
+ *  @see DragViaPoint.js
+ *  @return arraDataObj - lista aggiornata delle tappa
+ */
 function updateArrayVP(index){
 	var formRN = Ext.getCmp("routingID");
 	var arrayViaPoints = formRN.getViaPoints();
@@ -267,7 +292,6 @@ function updateArrayVP(index){
 	
 		for(var i=0; i<arrayViaPoints.length; i++){
 			arraDataObj.push([i,stretList[i]]);
-//			alert(stretList[i]);
 		}
 	
 	if(arrayViaPoints.length == 0){
