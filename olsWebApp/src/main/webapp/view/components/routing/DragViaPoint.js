@@ -1,3 +1,9 @@
+/**
+ * DraListViaPoint
+ * Si occupa della gestione delle tappe, effettuando operazioni di "Move UP" , "Move Down" 
+ * e "Cancellazione".
+ * Ad ogni operazione viene automaticamente ricalcolato il percorso e visualizzato su mappa
+ */
 Ext.ns('DRAGVP');
 var host = document.location.host;
 var startPoint = null;
@@ -53,7 +59,8 @@ DRAGVP.DragListViaPoint = Ext.extend(Ext.grid.GridPanel, {
                                        if(moveUpNumber.length == 0){
                                     	   evt.rowIndex = parseInt(rowIndex)+1;
                                        }else{
-                                    	   evt.rowIndex = parseInt(moveUpNumber[rowIndex]);
+                                    	   evt.rowIndex = parseInt(rowIndex)+1;
+//                                    	   evt.rowIndex = parseInt(moveUpNumber[rowIndex]);
                                        }
                                        document.dispatchEvent(evt);
                                    }
@@ -71,11 +78,12 @@ DRAGVP.DragListViaPoint = Ext.extend(Ext.grid.GridPanel, {
                                 	   dList = formR.getListDrag(); 
                                 	   
                                 	   	 if(dList.length == 1 || rowIndex == 0){
-                                	   		 //Do nothung
+                                	   		 //Do nothung - non spostare il primo elemento della lista
                                 	   		 return;
                                 	   	 }else{
                                 	   		 dList = orderingUp(dList,rowIndex);
                                 	   		 formR.setListDrag(dList);
+                                	   		 updateFeatureVia(rowIndex);
                                 	   		 var arrayViaPoints = formRN.getViaPoints();
                                 	   		 arrayViaPoints = orderingUp(arrayViaPoints,rowIndex);
                                 	   		 formRN.setViaPoints(arrayViaPoints);
@@ -85,6 +93,22 @@ DRAGVP.DragListViaPoint = Ext.extend(Ext.grid.GridPanel, {
                                 	   		 streetList = orderingUp(streetList,rowIndex);
                                 	   		 formR.setStreetList(streetList);
                                 	   		 formRN.recalculateNavigation();
+                                	   		 
+                                	   		Ext.MessageBox.show({
+                                	            msg: 'Routing calculating, please wait...',
+                                	            progressText: 'Saving...',
+                                	            width:300,
+                                	            wait:true,
+                                	            waitConfig: {interval:200},
+                                	            icon:'ext-mb-download', //custom class in msg-box.html
+                                	            animateTarget: 'mb7'
+                                	        });
+                                	         setTimeout(function(){
+                                	             //This simulates a long-running operation like a database save or XHR call.
+                                	             //In real code, this would be in a callback function.
+                                	             Ext.MessageBox.hide();
+                                	             Ext.example.msg('Done', 'Your fake data was saved!');
+                                	         }, 3000);
                                 	   	 }
                                    }
                                }]
@@ -95,16 +119,45 @@ DRAGVP.DragListViaPoint = Ext.extend(Ext.grid.GridPanel, {
                                items: [{
                                    icon   : '../resources/img/down.png',  // Use a URL in the icon config
                                    tooltip: 'Movo Down Via Point',
-                                   handler: function() {
-                                	   	 alert("Move Down	 Via Point");
-//                                       var rec = store.getAt(rowIndex);
-//                                       Ext.getCmp('routingID').getForm().findField('startPoint').setValue(rec.get('street'));
-//                                       position = rec.get('pos');
-//                                       //Create the event for Start Point
-//                                       var evt = document.createEvent("Event");
-//                                       evt.initEvent("startPointEvent",true,true);
-//                                       evt.pos = position;
-//                                       document.dispatchEvent(evt);
+                                   handler: function(grid, rowIndex, colIndex) {
+                                	   var formR = Ext.getCmp("reverseID");
+                                	   var formRN = Ext.getCmp("routingID");
+                                	   dList = formR.getListDrag();
+                                	   
+                                	   if(dList.length == 1 || rowIndex == (dList.length)-1){
+                              	   		 //Do nothung - non spostare l'ultimo elemento della lista
+                              	   		 return;
+	                              	   }else{
+	                                	   dList = orderingDown(dList,rowIndex);
+	                           	   		   formR.setListDrag(dList);
+	                           	   		   updateFeatureViaDown(rowIndex);
+	                           	   		   var arrayViaPoints = formRN.getViaPoints();
+	                           	   		   arrayViaPoints = orderingDown(arrayViaPoints,rowIndex);
+	                           	   		   formRN.setViaPoints(arrayViaPoints);
+	                            	   		 
+	                           	   		   updateIndex(dList,arrayViaPoints);
+	                           	   		   var streetList = formR.getStreetList();
+	                           	   		   streetList = orderingDown(streetList,rowIndex);
+	                           	   		   formR.setStreetList(streetList);
+	                           	   		   formRN.recalculateNavigation();
+	                           	   		   
+	                           	   		Ext.MessageBox.show({
+                            	            msg: 'Routing calculating, please wait...',
+                            	            progressText: 'Saving...',
+                            	            width:300,
+                            	            wait:true,
+                            	            waitConfig: {interval:200},
+                            	            icon:'ext-mb-download', //custom class in msg-box.html
+                            	            animateTarget: 'mb7'
+                            	        });
+                            	         setTimeout(function(){
+                            	             //This simulates a long-running operation like a database save or XHR call.
+                            	             //In real code, this would be in a callback function.
+                            	             Ext.MessageBox.hide();
+                            	             Ext.example.msg('Done', 'Your fake data was saved!');
+                            	         }, 3000);
+	                           	   		   
+	                              	   	 }
                                    }
                                }]
                            }
@@ -115,9 +168,40 @@ DRAGVP.DragListViaPoint = Ext.extend(Ext.grid.GridPanel, {
         Ext.apply(this, Ext.apply(this.initialConfig, config));
         DRAGVP.DragListViaPoint.superclass.initComponent.call(this);
 	}
+
+	,updateMoveArray:function(){
+		moveUpNumber = [];
+	}
+	
+	,updateFeature:function(){
+		var formR = Ext.getCmp("reverseID");
+ 	   	var formRN = Ext.getCmp("routingID");
+ 	   	dList = formR.getListDrag(); 
+ 	   	var arrayViaPoints = formRN.getViaPoints();
+ 	   var arraDataObj = [];
+ 		var arrayIndex 	= [];
+ 		for(var i=0; i<arrayViaPoints.length; i++){
+ 			var streetName = dList[i].toString();
+ 			arraDataObj.push([i,streetName.split(",")[1]]);
+// 			arrayIndex.push(dList[i].toString().split(",")[0]);
+ 			arrayIndex.push(i);
+ 		}
+ 		
+ 		Ext.getCmp('viaPointList').handler(arraDataObj);
+ 		
+ 		//Lancia un evento per l'aggiornamento delle feature presenti su mappa
+ 		var evt = document.createEvent("Event");
+ 	    evt.initEvent("updateFeaturesEvent",true,true);
+ 	    evt.aIndex = arrayIndex;
+ 	    moveUpNumber = arrayIndex;
+ 	    document.dispatchEvent(evt);
+	}
 });
 Ext.reg('dragListViaPoint', DRAGVP.DragListViaPoint);
-//create the data store
+
+/**
+ * Creazione del data source da visualizzare all'interno della lista
+ */
 var storeVia = new Ext.data.ArrayStore({
     fields: [
        {name: 'numberViaPoint'},
@@ -125,6 +209,34 @@ var storeVia = new Ext.data.ArrayStore({
     ]
 });
 
+/**
+ * Funzione di Ordinamento verso il basso - Move Down
+ * @param dList
+ * @param rowIndex
+ */
+function orderingDown(dList,rowIndex){
+	var tempList = [];
+	var temp;
+	for(var i=0; i<dList.length; i++){
+		if(i == rowIndex){
+			temp = dList[i];
+			tempList[i] = dList[rowIndex+1]; 
+		}else if(i == rowIndex+1){
+			tempList[i] = temp;
+		}else{
+			tempList[i] = dList[i];
+		}
+	}
+	
+	return tempList;
+}
+
+/**
+ * Funzione di Ordinamento verso l'alto - Move UP
+ * @param dList, lista da aggiornare
+ * @param rowIndex, indice da aggiornare
+ * @returns {Array} aggiornato
+ */
 function orderingUp(dList,rowIndex){
 	var tempList = [];
 	var temp;
@@ -142,29 +254,31 @@ function orderingUp(dList,rowIndex){
 	return tempList;
 }
 
-function updateIndex(dList,arrayViaPoints){
-	var arraDataObj = [];
-	var arrayIndex 	= [];
-	for(var i=0; i<arrayViaPoints.length; i++){
-		var streetName = dList[i].toString();
-		arraDataObj.push([i,streetName.split(",")[1]]);
-		arrayIndex.push(dList[i].toString().split(",")[0]);
-	}
-	
-	Ext.getCmp('viaPointList').handler(arraDataObj);
-	
-//	for(var i=0; i<arrayIndex.length; i++){
-//		alert(arrayIndex[i]);
-//	}
-	
-	//Lancia un evento per l'aggiornamento delle feature presenti su mappa
+function updateFeatureVia(rowIndex){
 	var evt = document.createEvent("Event");
-    evt.initEvent("updateFeaturesEvent",true,true);
-    evt.aIndex = arrayIndex;
-    moveUpNumber = arrayIndex;
+    evt.initEvent("orderUpFeaturesEvent",true,true);
+    evt.rowIndex = rowIndex;
     document.dispatchEvent(evt);
 }
 
-//manually load local data
+function updateFeatureViaDown(rowIndex){
+	var evt = document.createEvent("Event");
+    evt.initEvent("orderDownFeaturesEvent",true,true);
+    evt.rowIndex = rowIndex;
+    document.dispatchEvent(evt);
+}
+/**
+ * 
+ * Aggiorna l'indice delle due liste
+ *
+ * @param dList, lista delle tappe ed identify
+ * @param arrayViaPoints, Lista dei viaPoint -> contengono solamente l'informazione geometrica
+ */
+function updateIndex(dList,arrayViaPoints){
+	dragList = Ext.getCmp("viaPointList");
+	dragList.updateFeature();
+}
+
+//Caricamento manuale dei dati
 storeVia.loadData();
 

@@ -285,7 +285,7 @@ RNGEO.RoutinNavigationForm = Ext.extend(Ext.form.FormPanel, {
 //		alert("AAA");
 		var evt = document.createEvent("Event");
 	    evt.initEvent("indexViaUpdateEvent",true,true);
-	    evt.indexViaUp = (viaPoints.length);
+	    evt.indexViaUp = (viaPoints.length+1);
 	    evt.indexDeleted = indexLess;
 	    document.dispatchEvent(evt);
 	}
@@ -305,7 +305,7 @@ RNGEO.RoutinNavigationForm = Ext.extend(Ext.form.FormPanel, {
 		formR.setStreetList(streets);
 		var evt = document.createEvent("Event");
 	    evt.initEvent("indexViaUpdateEvent",true,true);
-	    evt.indexViaUp = (viaPoints.length);
+	    evt.indexViaUp = (viaPoints.length+1);
 	    evt.indexDeleted = (index+1);
 	    document.dispatchEvent(evt);
 	}
