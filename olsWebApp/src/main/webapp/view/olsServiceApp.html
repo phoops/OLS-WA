@@ -36,6 +36,8 @@
 <script type="text/javascript" src="components/routing/ListNavigationDirection.js"></script>
 <!-- extensions Drag List Via Point -->
 <script type="text/javascript" src="components/routing/DragViaPoint.js"></script>
+<!-- extensions Config Workspace-->
+<script type="text/javascript" src="components/configuration/ConfigForm.js"></script>
 
 </head>
 <!-- page specific http://vmap0.tiles.osgeo.org/wms/vmap0-->
@@ -261,7 +263,12 @@
         //--------------------------------
         Ext.onReady(function() {
     		Ext.QuickTips.init();
-
+    		
+    		//------------------
+    		//Form Configurazion
+    		//------------------
+    		//var formConfig = new CONFIG.ConfigForm();
+			//formConfig.render(document.body);
     		//--------------
     		//Form Georuting
     		//--------------
@@ -510,7 +517,7 @@
             formRN.recalculateNavigation();
           	
             endVisible = true;
-		    handlerStartEndControl(vertorHandlerPoint, event);
+//		    handlerStartEndControl(vertorHandlerPoint, event);
       	}
         
         /**
@@ -566,8 +573,8 @@
 							}
 		    			}
 	                });
-		    map.addControl(selectControl);
-		    
+	                
+		    //map.addControl(selectControl);
          	formRN.addToViaPoint(location);
 			formRN.recalculateNavigation();
          	

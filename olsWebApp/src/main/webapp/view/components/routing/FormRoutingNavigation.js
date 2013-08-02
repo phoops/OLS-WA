@@ -104,6 +104,18 @@ RNGEO.RoutinNavigationForm = Ext.extend(Ext.form.FormPanel, {
 		            		var xmlhttp = null;
 		            		var methodSearch = Ext.getCmp('method').getValue();
 		            		
+		            		//Controllo se è stato definito uno StartPoint ed un EndPoitn
+		            		//altrimenti non procedo 
+		            		if(startPoint == null){
+		            			Ext.MessageBox.alert('Error', 'Insert a Start Point to calculate a Route Navigation!');
+		            			document.body.style.cursor="default";
+		            			return;
+		            		}else if(endPoint == null){
+		            			Ext.MessageBox.alert('Error', 'Insert an End Point to calculate a Route Navigation!');
+		            			document.body.style.cursor="default";
+		            			return;
+		            		}
+		            		
 		            		if(methodSearch != ""){
 		            		
 			            		if (window.XMLHttpRequest){
@@ -312,6 +324,15 @@ RNGEO.RoutinNavigationForm = Ext.extend(Ext.form.FormPanel, {
 		var xmlhttp = null;
 		var methodSearch = Ext.getCmp('method').getValue();
 		
+		//Controllo se lo StartPoint o l'EndPoit è stato inserito
+		//Se si proceto altrimenti non avanzo
+		if(startPoint == null 
+				|| endPoint == null){
+			//Non chiamre il servizio -> non produrebbe nessun risultato
+			document.body.style.cursor="default";
+			return;
+		}
+		
 		if(methodSearch != ""){
 		
     		if (window.XMLHttpRequest){
@@ -322,8 +343,8 @@ RNGEO.RoutinNavigationForm = Ext.extend(Ext.form.FormPanel, {
     			xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
     		}
     		
-    		var startValue = Ext.getCmp('startPoint').getValue();
-    		var endValue = Ext.getCmp('endPoint').getValue();
+//    		var startValue = Ext.getCmp('startPoint').getValue();
+//    		var endValue = Ext.getCmp('endPoint').getValue();
     		var xmlVia = "";
     		for(var i=0; i<viaPoints.length; i++){
     			xmlVia += "			<ViaPoint>"
@@ -391,6 +412,7 @@ RNGEO.RoutinNavigationForm = Ext.extend(Ext.form.FormPanel, {
 //    			    	alert("Error 404 Service Not Found!");
     			    	document.body.style.cursor = "default";
     			    	Ext.MessageBox.alert('Error 404', 'Service Not Found!');
+    			    	document.body.style.cursor="default";
     			        break;
     			    case 500:
     			    	document.body.style.cursor = "default";
