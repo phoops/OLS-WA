@@ -5,6 +5,7 @@ var namespace = 'http://www.opengis.net/xls';
 var namespace2 = 'http://www.opengis.net/gml';
 
 GEO.GeoroutingForm = Ext.extend(Ext.form.FormPanel, {
+	id: 'geocodingID',
 	collapsible: true,	
     initComponent:function() {
     	var config = 
@@ -73,6 +74,14 @@ GEO.GeoroutingForm = Ext.extend(Ext.form.FormPanel, {
 		          {
 		        	  fieldLabel: 'Toponimo', 
 		        	  id: 'via',
+		        	  listeners: {
+		                  specialkey: function(f,e){
+		                    if (e.getKey() == e.ENTER) {
+		                        var toponimoValue = Ext.getCmp('geocodingID').getForm().findField('via').getValue();
+		                        submitEnter(toponimoValue);
+		                    }
+		                  }
+		                },
 //		        	  enableKeyEvents: true,
 //	            	  listeners: {
 //	            	      keypress : function(textfield,eventObjet){
@@ -267,4 +276,84 @@ function toArrayData(xml){
 		);
 	}
 	return arraDataObj;
+}
+
+function submitEnter(toponimo){
+	document.body.style.cursor = "wait";
+	if(Ext.getCmp('provincia').isValid()
+			&& Ext.getCmp('comune').isValid()
+			&& Ext.getCmp('via').isValid()){
+			
+		var tValue = ""; 
+			
+		if(typeof toponimo == 'string'){
+			tValue = toponimo;
+		}else{
+			tValue = Ext.getCmp('via').getValue();
+		}
+			
+		var pValue = Ext.getCmp('provincia').getValue(); 
+   		var cValue = Ext.getCmp('comune').getValue();
+    		
+   		var xmlhttp = null;
+    		
+   		if (window.XMLHttpRequest){
+    			// code for IE7+, Firefox, Chrome, Opera, Safari
+   			xmlhttp = new XMLHttpRequest();
+   		}else{
+    			// code for IE6, IE5
+   			xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+   		}
+   		
+   		var url = "http://"+host+"/geoserver/ols";
+   		var xml = "<?xml version='1.0' encoding='UTF-8'?>"
+   					+"<GeocodeRequest xmlns='http://www.opengis.net/xls'>"
+   					+"	<Address countryCode='IT'>"
+   					+"		<StreetAddress>"
+   					+"			<Street>" + tValue + "</Street>"
+   					+"		</StreetAddress>"
+   					+"		<Place type='Municipality'>" + cValue + "</Place>"
+   					+"		<Place type='CountrySecondarySubdivision'>" + pValue + "</Place>"
+   					+"		<PostalCode></PostalCode>"
+   					+"	</Address>"
+   					+"</GeocodeRequest>";
+   		
+   		//Handler POST request
+   		xmlhttp.open("POST", url);
+   		
+   		xmlhttp.onreadystatechange = function() {
+   			if (xmlhttp.readyState==4)
+   			{
+   			    switch (xmlhttp.status)
+   			    {
+   			    case 200: // Do the Do
+   			    	
+   			    	xml = xmlhttp.responseXML;
+   			    	var streetDataArray = toArrayData(xml);
+   			    	if(streetDataArray.length == 0){
+   			    		Ext.MessageBox.alert('Error', 'Street not found!');
+   			    		break;
+   			    	}
+   			    	Ext.getCmp('streesList').handler(streetDataArray);
+   			    	document.body.style.cursor = "default";
+    			    	
+   			        break;
+   			    case 404: // Error: 404 - Resource not found!
+   			    	document.body.style.cursor = "default";
+   			    	alert("Error 404 Service Not Found!");
+   			        break;
+   			    case 500:
+   			    	document.body.style.cursor = "default";
+   			    	alert("Error 500 " + xmlhttp.responseText);
+   			    	break;
+   			    default:  // Error: Unknown!
+   			    }
+   			}    
+   	    };
+    	    
+   	    xmlhttp.send(xml);
+	}else{
+		document.body.style.cursor = "default";
+		return;
+	}
 }
