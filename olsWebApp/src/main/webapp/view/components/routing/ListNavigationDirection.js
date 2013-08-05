@@ -9,7 +9,7 @@ RNGEO.ListNavigationDirection = Ext.extend(Ext.grid.GridPanel, {
 //                autoExpandColumn: 'street',
 //            	width: '78%',
             	width: '22%',
-                height: 220,
+                height: 185,
                 title: 'Navigation Information',
                 // config options for stateful behavior
                 stateful: true,

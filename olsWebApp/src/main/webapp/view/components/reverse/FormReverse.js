@@ -11,6 +11,7 @@ RGEO.ReverseGeoroutingForm = Ext.extend(Ext.form.FormPanel, {
 				id: 'formReverseId',
 		        labelWidth: 75, // label settings here cascade unless 	
 		        frame:true,
+		        collapsed:true,
 		        title: 'Reverse Geocoding Information',
 		        bodyStyle:'padding:5px 5px 0',
 		        width: '22%',

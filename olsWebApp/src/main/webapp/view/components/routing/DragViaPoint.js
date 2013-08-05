@@ -19,7 +19,7 @@ DRAGVP.DragListViaPoint = Ext.extend(Ext.grid.GridPanel, {
 				frame: true,
 				stripeRows: true,
 				width: '30%',
-				height: 200,
+				height: 240,
 				title: 'Destinations List',
 				// config options for stateful behavior
                 stateful: true,

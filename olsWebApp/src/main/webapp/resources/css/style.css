@@ -3,10 +3,11 @@
 */
 
 .mapContainer{
-	width:77%; 
-	height:646px; 
-	float: right; 
-	padding: 2px;
+	width:75%; 
+	height:70%; 
+	float: left; 
+	padding: 10px;
+	
 }
 
 #map{

@@ -8,7 +8,7 @@ GEO.ListGeoroutingForm = Ext.extend(Ext.grid.GridPanel, {
 //                autoExpandColumn: 'street',
 //            	width: '78%',
             	width: '70%',
-                height: 200,
+                height: 240,
                 title: 'Open LS Results',
                 // config options for stateful behavior
                 stateful: true,
