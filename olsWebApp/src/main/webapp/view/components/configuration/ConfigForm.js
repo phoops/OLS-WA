@@ -145,10 +145,7 @@ var storeWS = new Ext.data.ArrayStore({
     fields: [
         'wsValue',
         'wsDisplay'
-    ],
-    data: [ ['ws_OTP', 'ws_OTP'],
-            ['pgRouting', 'pgRouting']
-    	 ]
+    ]
 });
 // manually load local data
 storeWS.loadData(myData);
