@@ -78,7 +78,8 @@ GEO.GeoroutingForm = Ext.extend(Ext.form.FormPanel, {
 		                  specialkey: function(f,e){
 		                    if (e.getKey() == e.ENTER) {
 		                        var toponimoValue = Ext.getCmp('geocodingID').getForm().findField('via').getValue();
-		                        submitEnter(toponimoValue);
+		                        var workspaceName = Ext.getCmp('formConfigId').getForm().findField('workspace').getValue();
+		                        submitEnter(toponimoValue, workspaceName);
 		                    }
 		                  }
 		                },
@@ -87,7 +88,7 @@ GEO.GeoroutingForm = Ext.extend(Ext.form.FormPanel, {
 //	            	      keypress : function(textfield,eventObjet){
 //	            	    	  alert(eventObject.getCharCode());
 //	            	          if (eventObject.getCharCode() == Ext.EventObject.ENTER) {
-//	            	               //enter is pressed call the next buttons handler function here.
+//	            	               //enter 	is pressed call the next buttons handler function here.
 //	            	               alert("Call the submit");
 //	            	          }
 //	            	      }
@@ -132,7 +133,15 @@ GEO.GeoroutingForm = Ext.extend(Ext.form.FormPanel, {
 			            			xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
 			            		}
 			            		
-			            		var url = "http://"+host+"/geoserver/ols";
+			            		var workspaceName = Ext.getCmp('formConfigId').getForm().findField('workspace').getValue();
+			            		//Controlli il workspaceName
+			               		var url = '';
+			               		if(workspaceName == null || workspaceName == ''){
+			               			url = "http://"+host+"/geoserver/ols";
+			               		}else{
+			               			url = "http://"+host+"/geoserver/ols/"+workspaceName+"/ws";
+			               		}
+			            		
 			            		var xml = "<?xml version='1.0' encoding='UTF-8'?>"
 			            					+"<GeocodeRequest xmlns='http://www.opengis.net/xls'>"
 			            					+"	<Address countryCode='IT'>"
@@ -156,7 +165,20 @@ GEO.GeoroutingForm = Ext.extend(Ext.form.FormPanel, {
 			            			    case 200: // Do the Do
 			            			    	
 			            			    	xml = xmlhttp.responseXML;
-			            			    	var streetDataArray = toArrayData(xml);
+			            			    	if(xml == null){
+			               			    		Ext.MessageBox.alert('Error', 'No Workspace Found! Insert a correct Workspace Name');
+			               			    		document.body.style.cursor = "default";
+			               			    		break;
+			               			    	}
+			               			    	var streetDataArray = toArrayData(xml);
+			               			    	var errorMess = xmlhttp.responseText.toString();
+			               			    	//Check the workspace error;
+			               			    	if(errorMess == "noWorkspace"){
+			               			    		Ext.MessageBox.alert('Error', 'No Workspace Found! Insert a correct Workspace Name');
+			               			    		document.body.style.cursor = "default";
+			               			    		break;
+			               			    	}
+			            			    	
 			            			    	if(streetDataArray.length == 0){
 			            			    		Ext.MessageBox.alert('Error', 'Street not found!');
 			            			    		break;
@@ -278,7 +300,7 @@ function toArrayData(xml){
 	return arraDataObj;
 }
 
-function submitEnter(toponimo){
+function submitEnter(toponimo, workspaceName){
 	document.body.style.cursor = "wait";
 	if(Ext.getCmp('provincia').isValid()
 			&& Ext.getCmp('comune').isValid()
@@ -305,7 +327,14 @@ function submitEnter(toponimo){
    			xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
    		}
    		
-   		var url = "http://"+host+"/geoserver/ols";
+   		//Controlli il workspaceName
+   		var url = '';
+   		if(workspaceName == null || workspaceName == ''){
+   			url = "http://"+host+"/geoserver/ols";
+   		}else{
+   			url = "http://"+host+"/geoserver/ols/"+workspaceName+"/ws";
+   		}
+   		
    		var xml = "<?xml version='1.0' encoding='UTF-8'?>"
    					+"<GeocodeRequest xmlns='http://www.opengis.net/xls'>"
    					+"	<Address countryCode='IT'>"
@@ -329,9 +358,22 @@ function submitEnter(toponimo){
    			    case 200: // Do the Do
    			    	
    			    	xml = xmlhttp.responseXML;
+   			    	if(xml == null){
+   			    		Ext.MessageBox.alert('Error', 'No Workspace Found! Insert a correct Workspace Name');
+   			    		document.body.style.cursor = "default";
+   			    		break;
+   			    	}
    			    	var streetDataArray = toArrayData(xml);
+   			    	var errorMess = xmlhttp.responseText.toString();
+   			    	//Check the workspace error;
+   			    	if(errorMess == "noWorkspace"){
+   			    		Ext.MessageBox.alert('Error', 'No Workspace Found! Insert a correct Workspace Name');
+   			    		document.body.style.cursor = "default";
+   			    		break;
+   			    	}
    			    	if(streetDataArray.length == 0){
    			    		Ext.MessageBox.alert('Error', 'Street not found!');
+   			    		document.body.style.cursor = "default";
    			    		break;
    			    	}
    			    	Ext.getCmp('streesList').handler(streetDataArray);

@@ -96,7 +96,16 @@ RGEO.ReverseGeoroutingForm = Ext.extend(Ext.form.FormPanel, {
 			// code for IE6, IE5
 			xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
 		}
-		var url = "http://"+host+"/geoserver/ols";
+		
+		var workspaceName = Ext.getCmp('formConfigId').getForm().findField('workspace').getValue();
+		//Controlli il workspaceName
+   		var url = '';
+   		if(workspaceName == null || workspaceName == ''){
+   			url = "http://"+host+"/geoserver/ols";
+   		}else{
+   			url = "http://"+host+"/geoserver/ols/"+workspaceName+"/ws";
+   		}
+		
 		var xml = "<?xml version='1.0' encoding='UTF-8'?>"
 					+"<ReverseGeocodeRequest xmlns='http://www.opengis.net/xls' xmlns:gml='http://www.opengis.net/gml'>"
 					+"	<Position>"

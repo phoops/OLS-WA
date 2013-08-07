@@ -139,7 +139,14 @@ RNGEO.RoutinNavigationForm = Ext.extend(Ext.form.FormPanel, {
 			            					+"			</ViaPoint>";
 			            		}
 			            		
-			            		var url = "http://"+host+"/geoserver/ols";
+			            		var workspaceName = Ext.getCmp('formConfigId').getForm().findField('workspace').getValue();
+			            		//Controlli il workspaceName
+			               		var url = '';
+			               		if(workspaceName == null || workspaceName == ''){
+			               			url = "http://"+host+"/geoserver/ols";
+			               		}else{
+			               			url = "http://"+host+"/geoserver/ols/"+workspaceName+"/ws";
+			               		}
 			            		var xml = "<?xml version='1.0' encoding='UTF-8'?>"
 			            					+"<DetermineRouteRequest xmlns='http://www.opengis.net/xls' xmlns:gml='http://www.opengis.net/gml'>"
 			            					+"	<RoutePlan>"
@@ -356,7 +363,14 @@ RNGEO.RoutinNavigationForm = Ext.extend(Ext.form.FormPanel, {
     					+"			</ViaPoint>";
     		}
     		
-    		var url = "http://"+host+"/geoserver/ols";
+    		var workspaceName = Ext.getCmp('formConfigId').getForm().findField('workspace').getValue();
+    		//Controlli il workspaceName
+       		var url = '';
+       		if(workspaceName == null || workspaceName == ''){
+       			url = "http://"+host+"/geoserver/ols";
+       		}else{
+       			url = "http://"+host+"/geoserver/ols/"+workspaceName+"/ws";
+       		}
     		var xml = "<?xml version='1.0' encoding='UTF-8'?>"
     					+"<DetermineRouteRequest xmlns='http://www.opengis.net/xls' xmlns:gml='http://www.opengis.net/gml'>"
     					+"	<RoutePlan>"
