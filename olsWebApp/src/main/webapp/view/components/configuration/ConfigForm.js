@@ -19,7 +19,7 @@ CONFIG.ConfigForm = Ext.extend(Ext.form.FormPanel, {
 				        }
 
 				        //TODO: Da cambiare la chiamata al BE
-				        var url = "http://localhost/geoserver/workspace";
+				        var url = "http://"+host+"/geoserver/workspace";
 				        xmlhttp.open("GET", url);
 				        xmlhttp.onreadystatechange = function() {
 				                if (xmlhttp.readyState==4){
