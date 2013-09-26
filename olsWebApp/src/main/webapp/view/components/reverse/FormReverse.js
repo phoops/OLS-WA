@@ -107,13 +107,18 @@ RGEO.ReverseGeoroutingForm = Ext.extend(Ext.form.FormPanel, {
    		}
 		
 		var xml = "<?xml version='1.0' encoding='UTF-8'?>"
-					+"<ReverseGeocodeRequest xmlns='http://www.opengis.net/xls' xmlns:gml='http://www.opengis.net/gml'>"
-					+"	<Position>"
-					+"		<gml:Point>"
-					+"			<gml:pos>"+lat +" "+ lon+"</gml:pos>"
-					+"		</gml:Point>"
-					+"	</Position>"
-					+"</ReverseGeocodeRequest>";
+					+"<XLS version=\"1.2\" xmlns=\"http://www.opengis.net/xls\" xmlns:gml=\"http://www.opengis.net/gml\">"
+					+"	<RequestHeader />" // clientName="<ArcWebServices_username>" clientPassword="<ArcWebServices_token>"
+					+"	<Request methodName=\"ReverseGeocodeRequest\" version=\"1.2\" requestID=\"rte1\">"
+					+"		<ReverseGeocodeRequest xmlns='http://www.opengis.net/xls' xmlns:gml='http://www.opengis.net/gml'>"
+					+"			<Position>"
+					+"				<gml:Point>"
+					+"					<gml:pos>"+lat +" "+ lon+"</gml:pos>"
+					+"				</gml:Point>"
+					+"			</Position>"
+					+"		</ReverseGeocodeRequest>"
+					+"	</Request>"
+					+"</XLS>";
 		
 		//Handler POST request
 		xmlhttp.open("POST", url);

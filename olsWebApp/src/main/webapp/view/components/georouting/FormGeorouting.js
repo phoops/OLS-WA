@@ -143,16 +143,21 @@ GEO.GeoroutingForm = Ext.extend(Ext.form.FormPanel, {
 			               		}
 			            		
 			            		var xml = "<?xml version='1.0' encoding='UTF-8'?>"
-			            					+"<GeocodeRequest xmlns='http://www.opengis.net/xls'>"
-			            					+"	<Address countryCode='IT'>"
-			            					+"		<StreetAddress>"
-			            					+"			<Street>" + tValue + "</Street>"
-			            					+"		</StreetAddress>"
-			            					+"		<Place type='Municipality'>" + cValue + "</Place>"
-			            					+"		<Place type='CountrySecondarySubdivision'>" + pValue + "</Place>"
-			            					+"		<PostalCode></PostalCode>"
-			            					+"	</Address>"
-			            					+"</GeocodeRequest>";
+			            					+"<XLS version=\"1.2\" xmlns=\"http://www.opengis.net/xls\" xmlns:gml=\"http://www.opengis.net/gml\">"
+			            					+"	<RequestHeader />" // clientName="<ArcWebServices_username>" clientPassword="<ArcWebServices_token>"
+			            					+"	<Request methodName=\"GeocodeRequest\" version=\"1.2\" requestID=\"rte1\">"
+			            					+"		<GeocodeRequest xmlns='http://www.opengis.net/xls'>"
+			            					+"			<Address countryCode='IT'>"
+			            					+"				<StreetAddress>"
+			            					+"					<Street>" + tValue + "</Street>"
+			            					+"				</StreetAddress>"
+			            					+"				<Place type='Municipality'>" + cValue + "</Place>"
+			            					+"				<Place type='CountrySecondarySubdivision'>" + pValue + "</Place>"
+			            					+"				<PostalCode></PostalCode>"
+			            					+"			</Address>"
+			            					+"		</GeocodeRequest>"
+			            					+"	</Request>"
+			            					+"</XLS>";
 			            		
 			            		//Handler POST request
 			            		xmlhttp.open("POST", url);
@@ -335,17 +340,22 @@ function submitEnter(toponimo, workspaceName){
    			url = "http://"+host+"/geoserver/ols/"+workspaceName+"/ws";
    		}
    		
-   		var xml = "<?xml version='1.0' encoding='UTF-8'?>"
-   					+"<GeocodeRequest xmlns='http://www.opengis.net/xls'>"
-   					+"	<Address countryCode='IT'>"
-   					+"		<StreetAddress>"
-   					+"			<Street>" + tValue + "</Street>"
-   					+"		</StreetAddress>"
-   					+"		<Place type='Municipality'>" + cValue + "</Place>"
-   					+"		<Place type='CountrySecondarySubdivision'>" + pValue + "</Place>"
-   					+"		<PostalCode></PostalCode>"
-   					+"	</Address>"
-   					+"</GeocodeRequest>";
+		var xml = "<?xml version='1.0' encoding='UTF-8'?>"
+					+"<XLS version=\"1.2\" xmlns=\"http://www.opengis.net/xls\" xmlns:gml=\"http://www.opengis.net/gml\">"
+					+"	<RequestHeader />" // clientName="<ArcWebServices_username>" clientPassword="<ArcWebServices_token>"
+					+"	<Request methodName=\"GeocodeRequest\" version=\"1.2\" requestID=\"rte1\">"
+					+"		<GeocodeRequest xmlns='http://www.opengis.net/xls'>"
+					+"			<Address countryCode='IT'>"
+					+"				<StreetAddress>"
+					+"					<Street>" + tValue + "</Street>"
+					+"				</StreetAddress>"
+					+"				<Place type='Municipality'>" + cValue + "</Place>"
+					+"				<Place type='CountrySecondarySubdivision'>" + pValue + "</Place>"
+					+"				<PostalCode></PostalCode>"
+					+"			</Address>"
+					+"		</GeocodeRequest>"
+					+"	</Request>"
+					+"</XLS>";
    		
    		//Handler POST request
    		xmlhttp.open("POST", url);
