@@ -19,7 +19,7 @@ CONFIG.ConfigForm = Ext.extend(Ext.form.FormPanel, {
 				        }
 
 				        //TODO: Da cambiare la chiamata al BE
-				        var url = "http://"+host+"/geoserver/workspace";
+				        var url = "http://"+host+"/geoserver/olsWorkspaces";
 				        xmlhttp.open("GET", url);
 				        xmlhttp.onreadystatechange = function() {
 				                if (xmlhttp.readyState==4){
@@ -35,12 +35,18 @@ CONFIG.ConfigForm = Ext.extend(Ext.form.FormPanel, {
 				                            	}
 				                            	storeWS.loadData(arraDataObj);
 				                                break;
+				            			    case 401: // Error: 401 - Unauthorized!
+				                            	Ext.MessageBox.alert('Error 401', "Unauthorized");
+				            			        break;
 				                            case 404:
 				                            	Ext.MessageBox.alert('Error 404', "Service not Found");
 				                                break;
 				                            case 500:
 				                            	Ext.MessageBox.alert('Error 500', "Problematiche sul Server, riprovare più tardi");
 				                                break;
+				                            default:
+				                            	Ext.MessageBox.alert('Error ' + xmlhttp.status, "Unknown result code");
+				                            	break;
 				                            }
 				                }
 				        };
