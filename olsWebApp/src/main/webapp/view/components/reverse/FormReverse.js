@@ -1,5 +1,7 @@
 Ext.ns('RGEO');
 var host = document.location.host;
+var userName = "";
+var password = "";
 var namespace = 'http://www.opengis.net/xls';
 var namespace2 = 'http://www.opengis.net/gml';
 var indexFeature = null;
@@ -49,6 +51,22 @@ RGEO.ReverseGeoroutingForm = Ext.extend(Ext.form.FormPanel, {
 		return host;
 	}
 	
+	,setUserName:function(un){
+		userName = un;
+	}
+	
+	,getUserName:function(){
+		return userName;
+	}
+
+	,setPassword:function(p){
+		password = p;
+	}
+	
+	,getPassword:function(){
+		return password;
+	}
+
 	,getStreetList:function(){
 		return stretList;
 	}
@@ -108,7 +126,17 @@ RGEO.ReverseGeoroutingForm = Ext.extend(Ext.form.FormPanel, {
 		
 		var xml = "<?xml version='1.0' encoding='UTF-8'?>"
 					+"<XLS version=\"1.2\" xmlns=\"http://www.opengis.net/xls\" xmlns:gml=\"http://www.opengis.net/gml\">"
-					+"	<RequestHeader />" // clientName="<ArcWebServices_username>" clientPassword="<ArcWebServices_token>"
+					+"	<RequestHeader ";
+		
+		if (userName != "") {
+			xml = xml   +"	clientName=\"" + userName + "\" ";
+		}
+		
+		if (password != "") {
+			xml = xml   +"	clientPassword=\"" + password + "\" ";
+		}
+		
+		xml = xml   +"	/>"
 					+"	<Request methodName=\"ReverseGeocodeRequest\" version=\"1.2\" requestID=\"rte1\">"
 					+"		<ReverseGeocodeRequest xmlns='http://www.opengis.net/xls' xmlns:gml='http://www.opengis.net/gml'>"
 					+"			<Position>"
@@ -151,6 +179,10 @@ RGEO.ReverseGeoroutingForm = Ext.extend(Ext.form.FormPanel, {
 			    	document.body.style.cursor = "default";
 			    	
 			        break;
+			    case 401: // Error: 401 - Unauthorized!
+			    	document.body.style.cursor = "default";
+			    	alert("Error 401 Unauthorized!");
+			        break;
 			    case 404: // Error: 404 - Resource not found!
 			    	document.body.style.cursor = "default";
 			    	alert("Error 404 Service Not Found!");
@@ -160,6 +192,9 @@ RGEO.ReverseGeoroutingForm = Ext.extend(Ext.form.FormPanel, {
 			    	alert("Error 500 " + xmlhttp.responseText);
 			    	break;
 			    default:  // Error: Unknown!
+			    	document.body.style.cursor = "default";
+			    	alert("Error " + xmlhttp.status);
+			    	break;
 			    }
 			}    
 	    };
